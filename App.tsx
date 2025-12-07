@@ -24,6 +24,10 @@ export default function App() {
   const [nightText, setNightText] = useState("");
   const [journalEntry, setJournalEntry] = useState("");
   const [showBlood, setShowBlood] = useState(false); 
+  const [dunkCount, setDunkCount] = useState(0);
+  const [artColor, setArtColor] = useState<string>('white');
+  const [showTheEnd, setShowTheEnd] = useState(false);
+  
   const videoTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const bloodTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -75,11 +79,27 @@ export default function App() {
               break;
           case "Mr. Tharnett":
               utterance.pitch = 0.8;
-              utterance.rate = 0.95; // Slightly nervous?
+              utterance.rate = 0.95;
               break;
           case "Pinky":
               utterance.pitch = 1.8;
-              utterance.rate = 0.8; // High and creepy slow
+              utterance.rate = 0.8;
+              break;
+          case "Ms. Palette":
+              utterance.pitch = 1.4;
+              utterance.rate = 1.1;
+              break;
+          case "Mr. Mitch":
+              utterance.pitch = 0.7;
+              utterance.rate = 1.2; // Fast, sporty
+              break;
+          case "Nurse":
+              utterance.pitch = 1.5;
+              utterance.rate = 0.7; // Sweet but slow/creepy
+              break;
+          case "Corrupted Student 99":
+              utterance.pitch = 0.2;
+              utterance.rate = 0.8;
               break;
           case "Student 99":
           case "Student 99 (Thought)":
@@ -161,6 +181,7 @@ export default function App() {
     setTeacherName("Mrs. Grim");
     setTeacherDialogue("Welcome, students. Sit down. Silence. Take out your pencils.");
     setShowDialogue(true);
+    setShowTheEnd(false);
   };
 
   const triggerAccusation = () => {
@@ -414,6 +435,108 @@ export default function App() {
           setShowDialogue(false);
           setPhase(GamePhase.DAY_7_GRIM_SUFFIX_TASK);
           break;
+      case GamePhase.DAY_8_ART_INTRO:
+          setPhase(GamePhase.DAY_8_PAINTING);
+          setTeacherDialogue("Mix the colors. Paint the portrait. Don't disappoint me.");
+          setShowDialogue(false);
+          break;
+      case GamePhase.DAY_8_HORROR_REVEAL:
+          // Should generally not reach here due to timeout, but if clicked fast
+          break;
+      case GamePhase.NIGHT_8_LUNCH_WALK:
+          // Handled by WalkingSegment completion
+          break;
+      case GamePhase.DAY_9_HALLWAY_BULLY:
+          if (teacherDialogue.includes("Sorry")) {
+              setTeacherName("Student 99");
+              setTeacherDialogue("Why now when threr is 1 day left of school.");
+          } else if (teacherDialogue.includes("Why now")) {
+              setTeacherName("Bully");
+              setTeacherDialogue("I have been bleeding bad in the hostpital so I realized that I can do that to other people.");
+          } else if (teacherDialogue.includes("bleeding bad")) {
+              setTeacherName("Student 99");
+              setTeacherDialogue("Ok.");
+          } else {
+              setPhase(GamePhase.DAY_9_GRIM_CLASS_WAIT);
+              setTeacherName("Classmate");
+              setTeacherDialogue("She is 10 minutes late.");
+          }
+          break;
+      case GamePhase.DAY_9_GRIM_CLASS_WAIT:
+          if (teacherDialogue === "She is 10 minutes late.") {
+              setTeacherName("Student 99");
+              setTeacherDialogue("Wait for her.");
+          } else if (teacherDialogue === "Wait for her.") {
+              setTeacherName("Classmate");
+              setTeacherDialogue("I'm out.");
+          } else if (teacherDialogue === "I'm out.") {
+              setPhase(GamePhase.DAY_9_INK_RUN); // Visual trigger
+              setTeacherName("Student 99");
+              setTeacherDialogue("Run!!!!!!");
+          } else {
+              setDay(10);
+              setPhase(GamePhase.DAY_10_GYM_INTRO);
+              setTeacherName("Mr. Mitch");
+              setTeacherDialogue("I set up a trampoline so you can all dunk.");
+          }
+          break;
+      case GamePhase.DAY_10_GYM_INTRO:
+          if (teacherDialogue.includes("set up a trampoline")) {
+              setTeacherName("Student 99");
+              setTeacherDialogue("I can not dunk.");
+          } else if (teacherDialogue === "I can not dunk.") {
+              setTeacherName("Mr. Mitch");
+              setTeacherDialogue("Looks like we have student 99 going up first.");
+          } else {
+              setPhase(GamePhase.DAY_10_DUNK_TASK);
+              setDunkCount(0);
+              setShowDialogue(false);
+          }
+          break;
+      case GamePhase.DAY_10_INJURY:
+           if (teacherDialogue === "Your hands.") {
+               setTeacherName("Student 99");
+               setTeacherDialogue("There bleeding.");
+           } else if (teacherDialogue === "There bleeding.") {
+               setTeacherName("Mr. Mitch");
+               setTeacherDialogue("Lets go get you a paper towel.");
+           } else {
+               setPhase(GamePhase.NIGHT_10_NURSE_INTRO);
+               setTeacherName("Student 99");
+               setTeacherDialogue("Yo, Nurse.");
+           }
+           break;
+      case GamePhase.NIGHT_10_NURSE_INTRO:
+           if (teacherDialogue === "Yo, Nurse.") {
+               setTeacherName("Nurse");
+               setTeacherDialogue("Yes darling.");
+           } else if (teacherDialogue === "Yes darling.") {
+               setTeacherName("Student 99");
+               setTeacherDialogue("My hand is bleeding.");
+           } else if (teacherDialogue === "My hand is bleeding.") {
+               setTeacherName("Nurse");
+               setTeacherDialogue("A knife would help.");
+           } else if (teacherDialogue === "A knife would help.") {
+               // Slash effect logic here if needed
+               playJumpscareSound();
+               setTeacherName("Student 99");
+               setTeacherDialogue("My hand!");
+           } else if (teacherDialogue === "My hand!") {
+               setTeacherName("Nurse");
+               setTeacherDialogue("Theres more were that came from.");
+           } else {
+               setPhase(GamePhase.NIGHT_10_SURVIVAL_QTE);
+               setShowDialogue(false);
+           }
+           break;
+      case GamePhase.NIGHT_10_TRANSFORMATION:
+           if (teacherDialogue === "Nurse your stronger than me.") {
+               setTeacherName("Corrupted Student 99");
+               setTeacherDialogue("But Corrupted is better.");
+           } else {
+               setPhase(GamePhase.GAME_OVER);
+           }
+           break;
       default:
         break;
     }
@@ -474,6 +597,8 @@ export default function App() {
           setJournalEntry("");
       } else if (day === 7) {
           setPhase(GamePhase.NIGHT_7_LOBBY_SEARCH);
+      } else if (day === 8) {
+          setPhase(GamePhase.NIGHT_8_LUNCH_WALK);
       } else {
           setPhase(GamePhase.NIGHT_JOURNAL_ENTRY);
           setJournalEntry("");
@@ -567,9 +692,33 @@ export default function App() {
       setPhase(GamePhase.NIGHT_7_THEATER_END);
       playCorruptedMusic();
       setTimeout(() => {
-          setPhase(GamePhase.GAME_OVER);
+          // Start Day 8
+          setDay(8);
+          setPhase(GamePhase.DAY_8_ART_INTRO);
+          setTeacherName("Ms. Palette");
+          setTeacherDialogue("Welcome to Art. I am Ms. Palette. Today we paint.");
+          setShowDialogue(true);
       }, 10000);
   };
+
+  const handleArtMix = (color: string) => {
+      if (color === 'purple') {
+          // Success? Or just spooky change
+          setArtColor('purple');
+          setTimeout(() => {
+              playJumpscareSound();
+              setPhase(GamePhase.DAY_8_HORROR_REVEAL);
+              setShowDialogue(false); // Hide dialogue during jumpscare
+          }, 2000);
+      }
+  };
+  
+  const handleInkHeal = () => {
+      setPhase(GamePhase.NIGHT_10_TRANSFORMATION);
+      setTeacherName("Student 99");
+      setTeacherDialogue("Nurse your stronger than me.");
+      setShowDialogue(true);
+  }
 
   useEffect(() => {
     const handleGlobalKeyDown = (e: KeyboardEvent) => {
@@ -578,9 +727,49 @@ export default function App() {
          else if (phase === GamePhase.NIGHT_NOTE_READ || phase === GamePhase.NIGHT_4_NOTE) handleNoteClick();
          else if (phase === GamePhase.SCIENCE_VIDEO) triggerAccusation();
       }
+      
+      // Dunk logic
+      if (phase === GamePhase.DAY_10_DUNK_TASK && e.key.toLowerCase() === 'e') {
+          setDunkCount(prev => prev + 1);
+      }
+
+      // Fake QTE logic
+      if (phase === GamePhase.NIGHT_10_SURVIVAL_QTE && e.key.toLowerCase() === 'e') {
+          // Do nothing, futile
+      }
     };
     window.addEventListener('keydown', handleGlobalKeyDown);
     return () => window.removeEventListener('keydown', handleGlobalKeyDown);
+  }, [phase]);
+
+  // Dunk completion check
+  useEffect(() => {
+      if (phase === GamePhase.DAY_10_DUNK_TASK && dunkCount >= 50) {
+          setPhase(GamePhase.DAY_10_INJURY);
+          setTeacherName("Mr. Mitch");
+          setTeacherDialogue("Your hands.");
+          setShowDialogue(true);
+      }
+  }, [dunkCount, phase]);
+  
+  // Fake QTE Timer
+  useEffect(() => {
+      if (phase === GamePhase.NIGHT_10_SURVIVAL_QTE) {
+          const timer = setTimeout(() => {
+              setPhase(GamePhase.NIGHT_10_INK_CHOICE);
+          }, 7000);
+          return () => clearTimeout(timer);
+      }
+  }, [phase]);
+  
+  // Day 8 Jumpscare Transition
+  useEffect(() => {
+      if (phase === GamePhase.DAY_8_HORROR_REVEAL) {
+          const timer = setTimeout(() => {
+              setPhase(GamePhase.NIGHT_NOTE_READ);
+          }, 3000);
+          return () => clearTimeout(timer);
+      }
   }, [phase]);
 
   useEffect(() => {
@@ -589,6 +778,16 @@ export default function App() {
               setDay(4);
               setPhase(GamePhase.HALLWAY_WALK);
           }, 3000);
+          return () => clearTimeout(timer);
+      }
+  }, [phase]);
+  
+  // End Game Timer
+  useEffect(() => {
+      if (phase === GamePhase.GAME_OVER) {
+          const timer = setTimeout(() => {
+              setShowTheEnd(true);
+          }, 10000);
           return () => clearTimeout(timer);
       }
   }, [phase]);
@@ -706,6 +905,95 @@ export default function App() {
       </div>
   );
 
+  const PaletteVisual = () => (
+    <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col items-center z-10 transition-all duration-500">
+        <div className="w-32 h-32 md:w-48 md:h-48 bg-pink-200 rounded-full border-4 border-pink-500 relative shadow-2xl overflow-hidden">
+             {/* Paint splatters */}
+             <div className="absolute top-2 left-4 w-6 h-6 bg-red-500 rounded-full blur-sm opacity-80"></div>
+             <div className="absolute bottom-4 right-6 w-8 h-8 bg-blue-500 rounded-full blur-sm opacity-80"></div>
+             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full border-4 border-green-500 rounded-full opacity-20"></div>
+             {/* Face */}
+             <div className="absolute top-16 left-10 w-8 h-8 bg-black rounded-full"></div>
+             <div className="absolute top-16 right-10 w-8 h-8 bg-black rounded-full"></div>
+             <div className="absolute bottom-12 left-1/2 -translate-x-1/2 w-10 h-2 bg-black rotate-12"></div>
+        </div>
+        <div className="mt-4 bg-black/50 text-white px-4 py-1 rounded-full text-sm font-bold tracking-widest border border-white/20">
+            MS. PALETTE
+        </div>
+    </div>
+  );
+  
+  const ArtJumpscare = () => (
+      <div className="fixed inset-0 z-[100] bg-black flex items-center justify-center overflow-hidden">
+          <div className="relative w-full h-full animate-shake flex items-center justify-center">
+              <div className="absolute inset-0 bg-red-900 mix-blend-multiply animate-pulse"></div>
+              <div className="w-[80vw] h-[80vw] bg-white rounded-full border-8 border-black flex flex-col items-center justify-center relative">
+                  <div className="absolute top-1/3 left-1/4 w-32 h-32 bg-black rounded-full animate-bounce">
+                      <div className="absolute inset-0 bg-red-600 rounded-full blur-md opacity-50"></div>
+                  </div>
+                  <div className="absolute top-1/3 right-1/4 w-32 h-32 bg-black rounded-full animate-bounce delay-75">
+                      <div className="absolute inset-0 bg-red-600 rounded-full blur-md opacity-50"></div>
+                  </div>
+                  <div className="absolute bottom-1/4 w-2/3 h-48 bg-black rounded-[50%] animate-pulse overflow-hidden border-4 border-red-500">
+                      <div className="w-full h-full bg-[url('https://www.transparenttextures.com/patterns/felt.png')] opacity-50"></div>
+                  </div>
+              </div>
+          </div>
+      </div>
+  );
+
+  const MitchVisual = () => (
+    <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col items-center z-10 transition-all duration-500">
+        <div className="w-32 h-32 md:w-48 md:h-48 bg-orange-300 rounded-full border-4 border-orange-600 relative shadow-2xl overflow-hidden">
+             {/* Headband */}
+             <div className="absolute top-6 left-0 right-0 h-4 bg-blue-600"></div>
+             {/* Whistle */}
+             <div className="absolute bottom-4 left-1/2 -translate-x-1/2 w-8 h-8 bg-gray-400 rounded-full border-2 border-black"></div>
+             {/* Eyes */}
+             <div className="absolute top-16 left-12 w-4 h-4 bg-black rounded-full"></div>
+             <div className="absolute top-16 right-12 w-4 h-4 bg-black rounded-full"></div>
+        </div>
+        <div className="mt-4 bg-black/50 text-white px-4 py-1 rounded-full text-sm font-bold tracking-widest border border-white/20">
+            MR. MITCH
+        </div>
+    </div>
+  );
+  
+  const NurseVisual = () => (
+    <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col items-center z-10 transition-all duration-500">
+        <div className="w-32 h-32 md:w-48 md:h-48 bg-white rounded-full border-4 border-red-500 relative shadow-2xl overflow-hidden">
+             {/* Hat */}
+             <div className="absolute top-4 left-1/2 -translate-x-1/2 w-16 h-10 bg-white border-2 border-red-500 flex items-center justify-center">
+                 <div className="w-6 h-6 bg-red-500 rounded-full flex items-center justify-center text-white font-bold">+</div>
+             </div>
+             {/* Eyes - covered by mask? No, creepy eyes */}
+             <div className="absolute top-20 left-10 w-10 h-6 bg-black rounded-full"></div>
+             <div className="absolute top-20 right-10 w-10 h-6 bg-black rounded-full"></div>
+             {/* Mask */}
+             <div className="absolute bottom-4 left-1/2 -translate-x-1/2 w-24 h-16 bg-blue-200 opacity-80 border-t-2 border-white"></div>
+        </div>
+        <div className="mt-4 bg-black/50 text-white px-4 py-1 rounded-full text-sm font-bold tracking-widest border border-white/20">
+            NURSE
+        </div>
+    </div>
+  );
+
+  const CorruptedStudent99Visual = () => (
+    <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col items-center z-10 transition-all duration-500 animate-shake">
+        <div className="w-32 h-32 md:w-48 md:h-48 bg-black rounded-full border-4 border-red-900 relative shadow-2xl overflow-hidden">
+             <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/tv-noise.png')] opacity-50 animate-pulse"></div>
+             {/* Glitch Eyes */}
+             <div className="absolute top-16 left-10 w-8 h-8 bg-red-600 rounded-full animate-bounce"></div>
+             <div className="absolute top-16 right-10 w-8 h-8 bg-red-600 rounded-full animate-bounce delay-75"></div>
+             {/* Smile */}
+             <div className="absolute bottom-10 left-1/2 -translate-x-1/2 w-20 h-10 border-b-8 border-white rounded-full"></div>
+        </div>
+        <div className="mt-4 bg-red-900/80 text-black px-4 py-1 rounded-full text-sm font-bold tracking-widest border border-black animate-pulse">
+            CORRUPTED 99
+        </div>
+    </div>
+  );
+
   const SmartBoardHorror = () => (
       <div className="absolute inset-0 z-20 flex items-center justify-center bg-black/90">
           <div className="relative w-3/4 aspect-video bg-white shadow-[0_0_100px_rgba(255,255,255,0.2)] border-8 border-gray-400 flex items-center justify-center overflow-hidden">
@@ -788,7 +1076,7 @@ export default function App() {
     <div className="relative w-full h-screen bg-gray-900 overflow-hidden font-sans">
       
       {/* Background - Grim Room / Standard Classroom */}
-      { (phase === GamePhase.INTRO_DIALOGUE || phase === GamePhase.CLASSROOM_LESSON || phase === GamePhase.GRAMMAR_TASK || phase === GamePhase.GRADING_WAIT || phase === GamePhase.GRADING_RESULT || phase === GamePhase.MRS_GRIM_NO_REACTION || phase === GamePhase.NIGHT_5_INTRO || phase === GamePhase.DAY_7_GRIM_SUFFIX_INTRO || phase === GamePhase.DAY_7_GRIM_SUFFIX_TASK) && (
+      { (phase === GamePhase.INTRO_DIALOGUE || phase === GamePhase.CLASSROOM_LESSON || phase === GamePhase.GRAMMAR_TASK || phase === GamePhase.GRADING_WAIT || phase === GamePhase.GRADING_RESULT || phase === GamePhase.MRS_GRIM_NO_REACTION || phase === GamePhase.NIGHT_5_INTRO || phase === GamePhase.DAY_7_GRIM_SUFFIX_INTRO || phase === GamePhase.DAY_7_GRIM_SUFFIX_TASK || phase === GamePhase.DAY_9_GRIM_CLASS_WAIT) && (
         <div className="absolute inset-0 z-0">
             <div className="absolute inset-0 bg-[#e5e7eb] flex flex-col">
                 <div className="h-2/3 bg-[#d1d5db] relative border-b-8 border-[#9ca3af]">
@@ -847,6 +1135,63 @@ export default function App() {
             <MrSnickerdoodleVisual />
         </div>
       )}
+      
+      {/* Background - Art Classroom */}
+      { (phase === GamePhase.DAY_8_ART_INTRO || phase === GamePhase.DAY_8_PAINTING || phase === GamePhase.DAY_8_HORROR_REVEAL) && (
+          <div className="absolute inset-0 z-0">
+            <div className="absolute inset-0 bg-pink-100 flex flex-col">
+                <div className="h-2/3 bg-pink-200 relative border-b-8 border-pink-400">
+                    <div className="absolute top-10 left-1/2 -translate-x-1/2 w-3/4 h-3/5 bg-white border-8 border-yellow-700 shadow-xl rounded-sm p-4 overflow-hidden flex items-center justify-center">
+                         {/* The Living Portrait */}
+                         <div className={`w-32 h-40 bg-gray-200 rounded-full border-2 border-black relative transition-all duration-1000 ${phase === GamePhase.DAY_8_HORROR_REVEAL ? 'scale-150 shadow-[0_0_50px_red]' : ''}`}>
+                             <div className={`absolute top-12 left-8 w-4 h-4 bg-black rounded-full ${phase === GamePhase.DAY_8_HORROR_REVEAL ? 'bg-red-600 animate-pulse' : ''}`}></div>
+                             <div className={`absolute top-12 right-8 w-4 h-4 bg-black rounded-full ${phase === GamePhase.DAY_8_HORROR_REVEAL ? 'bg-red-600 animate-pulse' : ''}`}></div>
+                             {/* Mouth */}
+                             <div className={`absolute bottom-8 left-1/2 -translate-x-1/2 w-10 h-2 bg-black rounded-full transition-all duration-500 ${phase === GamePhase.DAY_8_HORROR_REVEAL ? 'h-8 w-8 rounded-full bg-black animate-ping' : ''}`}></div>
+                             {/* Tears */}
+                             {phase === GamePhase.DAY_8_HORROR_REVEAL && (
+                                 <>
+                                    <div className="absolute top-16 left-8 w-2 h-10 bg-red-600 rounded-full animate-bounce"></div>
+                                    <div className="absolute top-16 right-8 w-2 h-10 bg-red-600 rounded-full animate-bounce delay-100"></div>
+                                 </>
+                             )}
+                         </div>
+                    </div>
+                </div>
+                <div className="h-1/3 bg-[url('https://www.transparenttextures.com/patterns/wood-pattern.png')] bg-amber-900"></div>
+            </div>
+            {phase !== GamePhase.DAY_8_HORROR_REVEAL && <PaletteVisual />}
+            
+            {/* Color Mixing UI */}
+            {phase === GamePhase.DAY_8_PAINTING && (
+                <div className="absolute bottom-20 left-1/2 -translate-x-1/2 z-20 flex gap-4">
+                    <button onClick={() => setArtColor('red')} className="w-16 h-16 rounded-full bg-red-600 border-4 border-white shadow-lg hover:scale-110 transition-transform"></button>
+                    <button onClick={() => setArtColor('blue')} className="w-16 h-16 rounded-full bg-blue-600 border-4 border-white shadow-lg hover:scale-110 transition-transform"></button>
+                    <button onClick={() => handleArtMix('purple')} className="px-6 py-2 bg-purple-800 text-white font-bold rounded hover:bg-purple-700">MIX PURPLE</button>
+                </div>
+            )}
+        </div>
+      )}
+      
+      {/* Background - Gym */}
+      { (phase === GamePhase.DAY_10_GYM_INTRO || phase === GamePhase.DAY_10_DUNK_TASK || phase === GamePhase.DAY_10_INJURY) && (
+          <div className="absolute inset-0 z-0">
+             <div className="absolute inset-0 bg-orange-50 flex flex-col">
+                 <div className="h-2/3 bg-orange-100 relative border-b-8 border-orange-300">
+                      {/* Basketball Hoop */}
+                      <div className="absolute top-10 right-20 w-32 h-24 bg-transparent border-4 border-red-600 z-10">
+                          <div className="w-full h-full border-2 border-white opacity-50 bg-white/20"></div>
+                      </div>
+                      <div className="absolute top-32 right-24 w-24 h-2 bg-orange-600"></div>
+                      
+                      {/* Trampoline */}
+                      <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-64 h-16 bg-black border-t-4 border-gray-400 rounded-t-full"></div>
+                 </div>
+                 <div className="h-1/3 bg-[#e8aea1] bg-[url('https://www.transparenttextures.com/patterns/wood-pattern.png')]"></div>
+             </div>
+             <MitchVisual />
+          </div>
+      )}
 
       {/* Background - Principal Office */}
       { (phase === GamePhase.PRINCIPAL_OFFICE || phase === GamePhase.DAY_6_PRINCIPAL_OFFICE) && (
@@ -892,8 +1237,8 @@ export default function App() {
         </div>
       )}
       
-      {/* Background - Bully Encounter */}
-      { phase === GamePhase.BULLY_ENCOUNTER && (
+      {/* Background - Bully Encounter (Day 4 & 9) */}
+      { (phase === GamePhase.BULLY_ENCOUNTER || phase === GamePhase.DAY_9_HALLWAY_BULLY) && (
         <div className="absolute inset-0 z-0">
             <div className="absolute inset-0 bg-[#1e293b] flex flex-col">
                 <div className="h-2/3 bg-gray-300 relative border-b-8 border-gray-400">
@@ -930,9 +1275,34 @@ export default function App() {
             <GlitchGrimVisual />
           </>
       )}
+      
+      {/* Night 10 Nurse Room */}
+      { (phase === GamePhase.NIGHT_10_NURSE_INTRO || phase === GamePhase.NIGHT_10_SURVIVAL_QTE || phase === GamePhase.NIGHT_10_INK_CHOICE) && (
+          <div className="absolute inset-0 z-0">
+              <div className="absolute inset-0 bg-white flex flex-col">
+                  <div className="h-2/3 bg-gray-100 relative border-b-8 border-gray-300">
+                      <div className="absolute top-10 left-10 w-24 h-24 bg-red-100 border-2 border-red-200 flex items-center justify-center">
+                          <span className="text-4xl text-red-500 font-bold">+</span>
+                      </div>
+                  </div>
+                  <div className="h-1/3 bg-teal-100"></div>
+              </div>
+              <NurseVisual />
+          </div>
+      )}
+      
+      {/* Night 10 Transformation */}
+      { phase === GamePhase.NIGHT_10_TRANSFORMATION && (
+          <div className="absolute inset-0 z-0 bg-black flex items-center justify-center">
+              <CorruptedStudent99Visual />
+          </div>
+      )}
 
       {/* Jumpscare */}
       { phase === GamePhase.JUMPSCARE_SNICKERDOODLE && <SnickerdoodleJumpscare /> }
+      
+      {/* Art Jumpscare */}
+      { phase === GamePhase.DAY_8_HORROR_REVEAL && <ArtJumpscare /> }
 
       {/* Science Video */}
       {phase === GamePhase.SCIENCE_VIDEO && <ScienceVideo />}
@@ -946,16 +1316,38 @@ export default function App() {
               <h1 className="text-9xl font-horror text-black animate-shake">I SEE YOU</h1>
           </div>
       )}
+      
+      {/* Day 9 Ink Run Visual */}
+      {phase === GamePhase.DAY_9_INK_RUN && (
+          <div className="absolute inset-0 z-[100] bg-black flex flex-col items-center justify-center">
+               <h1 className="text-9xl text-white font-horror animate-shake mb-8">RUN!!!</h1>
+               <div className="w-full h-32 bg-black overflow-hidden relative">
+                   <div className="absolute inset-0 bg-gray-800 animate-pulse"></div>
+               </div>
+               {setTimeout(() => {
+                   setDay(10);
+                   setPhase(GamePhase.DAY_9_GRIM_CLASS_WAIT); // Triggers next day in dialogue handler logic or direct setPhase
+                   // Actually we want to go to Day 10 Gym after this brief scare
+                   setPhase(GamePhase.DAY_10_GYM_INTRO);
+                   setTeacherName("Mr. Mitch");
+                   setTeacherDialogue("I set up a trampoline so you can all dunk.");
+                   setShowDialogue(true);
+               }, 3000) && null}
+          </div>
+      )}
 
       {/* Start Screen */}
       {phase === GamePhase.START_SCREEN && (
         <div className="absolute inset-0 z-50 flex flex-col items-center justify-center bg-black text-white p-4 text-center">
           <h1 className="text-6xl md:text-8xl font-horror text-red-600 mb-4 animate-pulse-slow tracking-wider">
-            99 NIGHTS
+            100 NIGHTS
           </h1>
-          <h2 className="text-2xl md:text-4xl font-sans font-light text-gray-400 mb-12">
+          <h2 className="text-2xl md:text-4xl font-sans font-light text-gray-400 mb-2">
             IN A SCHOOL
           </h2>
+          <h3 className="text-xl md:text-2xl font-mono text-red-500 mb-12">
+            PART 1
+          </h3>
           <button 
             onClick={handleStartGame}
             className="px-12 py-4 bg-red-900 hover:bg-red-700 text-white font-bold text-xl rounded shadow-[0_0_20px_rgba(220,38,38,0.5)] transition-all transform hover:scale-105"
@@ -970,7 +1362,7 @@ export default function App() {
       {(phase === GamePhase.NIGHT_NOTE_READ || phase === GamePhase.NIGHT_4_NOTE) && (
           <div className="absolute inset-0 z-50 bg-black flex flex-col items-center justify-center p-8 animate-fade-in">
               <h2 className="text-4xl text-gray-500 font-horror mb-8">
-                  {day === 2 || day === 4 ? "DETENTION" : day === 7 ? "NIGHT 7" : `NIGHT ${day}`}
+                  {day === 2 || day === 4 || day === 8 ? "DETENTION" : day === 7 ? "NIGHT 7" : day === 10 ? "NIGHT 10" : `NIGHT ${day}`}
               </h2>
               <div 
                 onClick={handleNoteClick}
@@ -982,8 +1374,31 @@ export default function App() {
                       {day === 2 && '"Why did you disrespect the person that helps you?"'}
                       {day === 4 && '"Have you\'ve felt alone in detantion?"'}
                       {day === 7 && '"Find my tape."'}
+                      {day === 8 && '"Paint is red..."'}
                   </p>
                   <p className="mt-8 text-sm text-gray-400 text-center font-sans">(Click or Press Enter)</p>
+              </div>
+          </div>
+      )}
+      
+      {/* Day 10 Dunk Prompt Overlay */}
+      {phase === GamePhase.DAY_10_DUNK_TASK && (
+          <div className="absolute bottom-32 left-1/2 -translate-x-1/2 text-center z-50">
+              <p className="text-white font-mono text-2xl animate-pulse bg-black/50 p-4 rounded">
+                  PRESS [E] TO DUNK
+              </p>
+              <p className="text-red-500 font-bold text-4xl mt-2">{dunkCount} / 50</p>
+          </div>
+      )}
+      
+      {/* Night 10 Ink Choice Overlay */}
+      {phase === GamePhase.NIGHT_10_INK_CHOICE && (
+          <div className="absolute inset-0 z-50 flex items-center justify-center bg-black/80">
+              <div className="text-center">
+                  <h1 className="text-white text-4xl font-bold mb-8">INK WILL HEAL IT</h1>
+                  <button onClick={handleInkHeal} className="px-8 py-4 bg-black border-2 border-white text-white font-mono hover:bg-white hover:text-black transition-colors">
+                      [ USE INK ]
+                  </button>
               </div>
           </div>
       )}
@@ -1040,7 +1455,20 @@ export default function App() {
       {phase === GamePhase.EMPTY_CLASSROOM_EXPLORE && <WalkingSegment onComplete={handleEnding} />}
       {phase === GamePhase.HALLWAY_WALK && <HallwaySegment onLockerOpen={handleLockerOpen} />}
       {phase === GamePhase.DAY_7_HALLWAY_ESCAPE && <HallwaySegment onLockerOpen={() => handleDialogueNext()} />} 
-      {/* Reusing Hallway for Day 7 walkout, locker open triggers next phase */}
+      
+      {/* Night 8 Lunch Walk */}
+      {phase === GamePhase.NIGHT_8_LUNCH_WALK && (
+          <WalkingSegment 
+            mode="lunchroom" 
+            onComplete={() => {
+                setDay(9);
+                setPhase(GamePhase.DAY_9_HALLWAY_BULLY);
+                setTeacherName("Bully");
+                setTeacherDialogue("Sorry for what I have done to you.");
+                setShowDialogue(true);
+            }} 
+          />
+      )}
 
       {(phase === GamePhase.LIBRARY_WALK || phase === GamePhase.DAY_6_WALK_TO_LIBRARY) && <LibraryWalkSegment onDoorOpen={handleLibraryDoor} />}
       {phase === GamePhase.NIGHT_6_MUSIC_WALK && <MusicWalkSegment onDoorOpen={handleMusicDoor} />}
@@ -1067,12 +1495,20 @@ export default function App() {
       {/* Game Over / To Be Continued */}
       {phase === GamePhase.GAME_OVER && (
           <div className="absolute inset-0 z-[100] bg-black flex flex-col items-center justify-center animate-fade-in">
-              <h1 className="text-6xl text-white font-horror mb-4">TO BE CONTINUED...</h1>
+              {!showTheEnd ? (
+                  <>
+                    <h1 className="text-6xl text-white font-horror mb-4">TO BE CONTINUED...</h1>
+                    <p className="text-gray-500 font-mono mb-8">END OF PART 1</p>
+                  </>
+              ) : (
+                  <h1 className="text-8xl text-red-600 font-horror mb-4 animate-pulse">THE END</h1>
+              )}
+              
               <button 
-                onClick={() => setPhase(GamePhase.START_SCREEN)}
-                className="mt-8 text-white border px-6 py-2 hover:bg-white/20"
+                onClick={handleStartGame}
+                className={`mt-8 text-white border px-6 py-2 hover:bg-white/20 transition-opacity duration-1000 ${showTheEnd ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
               >
-                  Restart Demo
+                  Restart
               </button>
           </div>
       )}
@@ -1096,12 +1532,17 @@ export default function App() {
        phase !== GamePhase.NIGHT_6_MUSIC_REVEAL && 
        phase !== GamePhase.NIGHT_7_LOBBY_SEARCH &&
        phase !== GamePhase.NIGHT_7_THEATER_END && 
-       phase !== GamePhase.DAY_7_GRIM_FAILURE && (
+       phase !== GamePhase.DAY_7_GRIM_FAILURE && 
+       phase !== GamePhase.NIGHT_8_LUNCH_WALK && 
+       phase !== GamePhase.DAY_9_INK_RUN &&
+       phase !== GamePhase.NIGHT_10_INK_CHOICE && 
+       phase !== GamePhase.NIGHT_10_TRANSFORMATION && 
+       phase !== GamePhase.DAY_8_HORROR_REVEAL && (
         <>
             {/* Top Bar */}
             <div className="absolute top-0 left-0 right-0 p-4 flex justify-between items-start z-40 pointer-events-none">
                 <div className="bg-black/50 text-white px-4 py-2 rounded">
-                    Day: {day} / 99
+                    Day: {day} / 100
                 </div>
             </div>
 
