@@ -1,0 +1,58 @@
+/* ===== Opening Cinematic ===== */
+
+.cinematic {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  background: #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.cinematic__text-container {
+  max-width: 600px;
+  padding: 0 var(--space-xl);
+  text-align: center;
+}
+
+.cinematic__line {
+  font-family: var(--font-body);
+  font-size: clamp(0.9rem, 2vw, 1.15rem);
+  color: var(--color-parchment);
+  line-height: 2;
+  letter-spacing: 0.04em;
+}
+
+.cinematic__line--title {
+  font-family: var(--font-heading);
+  font-size: clamp(1.8rem, 4vw, 3rem);
+  color: var(--color-gold-bright);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  text-shadow: 0 0 40px rgba(201, 168, 76, 0.4);
+  margin: var(--space-xl) 0;
+}
+
+.cinematic__skip {
+  position: fixed;
+  bottom: var(--space-2xl);
+  right: var(--space-2xl);
+  font-family: var(--font-accent);
+  font-size: 0.75rem;
+  color: var(--color-parchment-dark);
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  padding: var(--space-xs) var(--space-md);
+  border: 1px solid rgba(201, 168, 76, 0.2);
+  border-radius: var(--radius-sm);
+  background: transparent;
+  transition: all var(--transition-base);
+  z-index: 10001;
+}
+
+.cinematic__skip:hover {
+  color: var(--color-gold);
+  border-color: var(--color-gold-dim);
+}

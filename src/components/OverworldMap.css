@@ -1,0 +1,622 @@
+/* ===== Overworld Map ===== */
+
+.overworld {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  background: var(--color-bg-deep);
+  cursor: crosshair;
+  user-select: none;
+}
+
+/* Parchment texture background */
+.overworld__parchment {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse at 20% 50%, rgba(42, 35, 24, 0.6) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 30%, rgba(42, 35, 24, 0.4) 0%, transparent 50%),
+    radial-gradient(ellipse at 50% 80%, rgba(53, 45, 34, 0.5) 0%, transparent 50%),
+    radial-gradient(ellipse at center, #2a2318 0%, #1a1510 60%, #0d0b0a 100%);
+  z-index: 0;
+}
+
+.overworld__parchment::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(212, 196, 160, 0.015) 2px,
+      rgba(212, 196, 160, 0.015) 4px
+    ),
+    repeating-linear-gradient(
+      90deg,
+      transparent,
+      transparent 3px,
+      rgba(212, 196, 160, 0.01) 3px,
+      rgba(212, 196, 160, 0.01) 6px
+    );
+}
+
+/* Burned edges vignette */
+.overworld__vignette {
+  position: absolute;
+  inset: 0;
+  box-shadow: inset 0 0 150px 60px rgba(0, 0, 0, 0.8);
+  z-index: 50;
+  pointer-events: none;
+}
+
+/* ===== Ornate Frame ===== */
+
+.overworld__frame {
+  position: absolute;
+  inset: 0;
+  z-index: 48;
+  pointer-events: none;
+  border: 2px solid rgba(201, 168, 76, 0.15);
+  box-shadow:
+    inset 0 0 0 4px rgba(0, 0, 0, 0.4),
+    inset 0 0 0 6px rgba(201, 168, 76, 0.08);
+  margin: 8px;
+  border-radius: 2px;
+}
+
+.frame-corner {
+  position: absolute;
+  z-index: 49;
+  pointer-events: none;
+  filter: drop-shadow(0 0 6px rgba(201, 168, 76, 0.15));
+}
+
+.frame-corner--tl { top: -2px; left: -2px; }
+.frame-corner--tr { top: -2px; right: -2px; }
+.frame-corner--bl { bottom: -2px; left: -2px; }
+.frame-corner--br { bottom: -2px; right: -2px; }
+
+/* ===== Parallax Layers ===== */
+
+.overworld__layer {
+  position: absolute;
+  inset: -60px;
+  transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  will-change: transform;
+}
+
+.overworld__layer--back {
+  z-index: 1;
+  opacity: 0.35;
+}
+
+.overworld__layer--mid {
+  z-index: 2;
+  opacity: 0.55;
+}
+
+.overworld__layer--front {
+  z-index: 3;
+}
+
+/* ===== SVG Map ===== */
+
+.overworld__svg {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+/* ===== Mountain Silhouettes (Back Layer) ===== */
+
+.mountain {
+  fill: var(--color-surface);
+  opacity: 0.6;
+}
+
+.mountain--far {
+  fill: #1e1a14;
+  opacity: 0.8;
+}
+
+/* ===== Terrain (Mid Layer) ===== */
+
+.terrain-coast {
+  fill: rgba(110, 180, 170, 0.06);
+  stroke: none;
+}
+
+.terrain-coast--shallow {
+  fill: rgba(110, 212, 196, 0.04);
+}
+
+.terrain-river {
+  fill: none;
+  stroke: rgba(110, 180, 200, 0.12);
+  stroke-width: 6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.terrain-river--shimmer {
+  stroke: rgba(160, 210, 230, 0.06);
+  stroke-width: 10;
+  animation: river-shimmer 4s ease-in-out infinite alternate;
+}
+
+@keyframes river-shimmer {
+  from { opacity: 0.4; stroke-width: 8; }
+  to { opacity: 1; stroke-width: 12; }
+}
+
+/* ===== Forest Shapes (Mid Layer) ===== */
+
+.forest-tree {
+  fill: #1a2a15;
+  opacity: 0.7;
+}
+
+.forest-tree--light {
+  fill: #243520;
+}
+
+/* ===== Paths (Front Layer) ===== */
+
+.map-path {
+  fill: none;
+  stroke: var(--color-parchment-dark);
+  stroke-width: 0.4;
+  stroke-dasharray: 1.5 1;
+  opacity: 0.35;
+}
+
+/* ===== Region Markers ===== */
+
+.region-marker {
+  cursor: pointer;
+  outline: none;
+  transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.region-marker:hover {
+  transform: scale(1.15);
+}
+
+.region-marker:focus-visible {
+  outline: none;
+}
+
+.region-marker:focus-visible .marker__shield {
+  stroke: var(--color-gold-bright);
+  stroke-width: 0.5;
+}
+
+/* Shield marker */
+.marker__shield {
+  fill: var(--color-bg-elevated);
+  stroke: var(--color-gold-dim);
+  stroke-width: 0.2;
+  transition: filter 0.3s ease;
+}
+
+.region-marker:hover .marker__shield {
+  filter: drop-shadow(0 0 2px rgba(201, 168, 76, 0.4));
+}
+
+.marker__icon {
+  fill: var(--color-gold);
+  font-family: var(--font-accent);
+  font-size: 2.2px;
+  text-anchor: middle;
+  dominant-baseline: central;
+  pointer-events: none;
+}
+
+/* Shield hover glow — subtle drop shadow */
+.region-marker:hover .marker__shield {
+  filter: drop-shadow(0 0 1.5px var(--color-gold));
+}
+
+/* ===== Banner Ribbons ===== */
+
+.marker__banner {
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  pointer-events: none;
+}
+
+.region-marker:hover .marker__banner {
+  opacity: 1;
+}
+
+.banner__connector {
+  fill: var(--color-gold-dim);
+  opacity: 0.5;
+}
+
+.banner__shape {
+  fill: rgba(26, 20, 8, 0.85);
+  stroke: rgba(201, 168, 76, 0.3);
+  stroke-width: 0.15;
+}
+
+.banner__text {
+  fill: var(--color-parchment);
+  font-family: var(--font-heading);
+  font-size: 1.8px;
+  text-anchor: middle;
+  dominant-baseline: central;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  filter: drop-shadow(0 0.3px 0.6px rgba(0, 0, 0, 0.8));
+}
+
+/* ===== Camp Marker ===== */
+
+.camp-marker {
+  pointer-events: none;
+}
+
+/* ===== Avatar ===== */
+
+.avatar-label {
+  fill: var(--color-parchment-dark);
+  font-family: var(--font-accent);
+  font-size: 1.4px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  opacity: 0.5;
+  filter: drop-shadow(0 0.3px 0.6px rgba(0, 0, 0, 0.8));
+}
+
+/* ===== Fog of War ===== */
+
+.overworld__fog {
+  position: absolute;
+  inset: 0;
+  z-index: 40;
+  pointer-events: none;
+  background: radial-gradient(
+    circle 200px at var(--mouse-x, 50%) var(--mouse-y, 50%),
+    transparent 0%,
+    transparent 30%,
+    rgba(13, 11, 10, 0.3) 60%,
+    rgba(13, 11, 10, 0.6) 100%
+  );
+  transition: background 0.15s ease;
+}
+
+/* ===== Ambient Clouds ===== */
+
+.overworld__clouds {
+  position: absolute;
+  inset: 0;
+  z-index: 30;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.cloud {
+  position: absolute;
+  background: radial-gradient(ellipse, rgba(212, 196, 160, 0.06) 0%, transparent 70%);
+  border-radius: 50%;
+  animation: cloud-drift linear infinite;
+  will-change: transform;
+}
+
+.cloud--1 {
+  width: 400px;
+  height: 120px;
+  top: 10%;
+  left: -400px;
+  animation-duration: 60s;
+}
+
+.cloud--2 {
+  width: 300px;
+  height: 80px;
+  top: 30%;
+  left: -300px;
+  animation-duration: 45s;
+  animation-delay: -15s;
+}
+
+.cloud--3 {
+  width: 500px;
+  height: 150px;
+  top: 55%;
+  left: -500px;
+  animation-duration: 75s;
+  animation-delay: -30s;
+}
+
+.cloud--4 {
+  width: 250px;
+  height: 70px;
+  top: 75%;
+  left: -250px;
+  animation-duration: 55s;
+  animation-delay: -40s;
+}
+
+@keyframes cloud-drift {
+  from { transform: translateX(0); }
+  to { transform: translateX(calc(100vw + 500px)); }
+}
+
+/* ===== Mist Layer ===== */
+
+.overworld__mist {
+  position: absolute;
+  inset: 0;
+  z-index: 25;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse at 20% 80%, rgba(168, 151, 112, 0.05) 0%, transparent 50%),
+    radial-gradient(ellipse at 70% 20%, rgba(168, 151, 112, 0.04) 0%, transparent 40%);
+  animation: mist-breathe 8s ease-in-out infinite alternate;
+}
+
+@keyframes mist-breathe {
+  from { opacity: 0.5; }
+  to { opacity: 1; }
+}
+
+/* ===== Ambient Animations ===== */
+
+/* Birds */
+.bird {
+  position: absolute;
+  z-index: 20;
+  pointer-events: none;
+}
+
+.bird__wing {
+  fill: none;
+  stroke: var(--color-parchment-dark);
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  opacity: 0.5;
+}
+
+.bird--1 {
+  top: 15%;
+  animation: bird-fly-1 18s linear infinite;
+}
+
+.bird--2 {
+  top: 22%;
+  animation: bird-fly-2 22s linear infinite;
+  animation-delay: -8s;
+}
+
+.bird--3 {
+  top: 12%;
+  animation: bird-fly-3 25s linear infinite;
+  animation-delay: -14s;
+}
+
+@keyframes bird-fly-1 {
+  0% { left: -30px; top: 15%; }
+  25% { top: 12%; }
+  50% { top: 18%; }
+  75% { top: 14%; }
+  100% { left: 110%; top: 10%; }
+}
+
+@keyframes bird-fly-2 {
+  0% { left: 110%; top: 22%; }
+  30% { top: 18%; }
+  60% { top: 25%; }
+  100% { left: -30px; top: 20%; }
+}
+
+@keyframes bird-fly-3 {
+  0% { left: -30px; top: 12%; }
+  50% { top: 8%; }
+  100% { left: 110%; top: 15%; }
+}
+
+/* Smoke from tavern */
+.smoke-particle {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  background: radial-gradient(circle, rgba(168, 151, 112, 0.15) 0%, transparent 70%);
+  border-radius: 50%;
+  z-index: 15;
+  pointer-events: none;
+  animation: smoke-rise 4s ease-out infinite;
+}
+
+.smoke-particle:nth-child(2) {
+  animation-delay: -1.3s;
+  width: 12px;
+  height: 12px;
+}
+
+.smoke-particle:nth-child(3) {
+  animation-delay: -2.6s;
+  width: 6px;
+  height: 6px;
+}
+
+@keyframes smoke-rise {
+  0% {
+    transform: translateY(0) translateX(0) scale(1);
+    opacity: 0.4;
+  }
+  50% {
+    transform: translateY(-30px) translateX(8px) scale(1.5);
+    opacity: 0.2;
+  }
+  100% {
+    transform: translateY(-60px) translateX(-5px) scale(2);
+    opacity: 0;
+  }
+}
+
+/* Waves on shore */
+.wave {
+  position: absolute;
+  z-index: 15;
+  pointer-events: none;
+  opacity: 0.3;
+}
+
+.wave__line {
+  fill: none;
+  stroke: #6ed4c4;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  opacity: 0.4;
+}
+
+.wave--1 { animation: wave-lap 4s ease-in-out infinite; }
+.wave--2 { animation: wave-lap 4s ease-in-out infinite 1.3s; }
+.wave--3 { animation: wave-lap 4s ease-in-out infinite 2.6s; }
+
+@keyframes wave-lap {
+  0%, 100% { transform: translateX(0); opacity: 0.3; }
+  50% { transform: translateX(6px); opacity: 0.5; }
+}
+
+/* Citadel flickering lights */
+.flicker-light {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  background: var(--color-gold-bright);
+  border-radius: 50%;
+  z-index: 15;
+  pointer-events: none;
+  box-shadow: 0 0 8px 2px rgba(230, 197, 85, 0.4);
+  animation: flicker 2s ease-in-out infinite alternate;
+}
+
+.flicker-light:nth-child(2) {
+  animation-delay: -0.7s;
+  animation-duration: 1.8s;
+}
+
+.flicker-light:nth-child(3) {
+  animation-delay: -1.4s;
+  animation-duration: 2.3s;
+}
+
+@keyframes flicker {
+  0%, 100% { opacity: 0.6; transform: scale(1); }
+  20% { opacity: 0.9; }
+  40% { opacity: 0.5; }
+  60% { opacity: 1; transform: scale(1.1); }
+  80% { opacity: 0.7; }
+}
+
+/* ===== Title ===== */
+
+.overworld__title {
+  position: absolute;
+  top: 5%;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 45;
+  text-align: center;
+  pointer-events: none;
+}
+
+.overworld__title h1 {
+  font-size: clamp(1.8rem, 4vw, 3.5rem);
+  letter-spacing: 0.2em;
+  text-shadow:
+    0 0 20px rgba(201, 168, 76, 0.3),
+    0 2px 10px rgba(0, 0, 0, 0.8);
+  margin-bottom: var(--space-xs);
+}
+
+.overworld__title p {
+  font-family: var(--font-accent);
+  color: var(--color-parchment-dark);
+  font-size: clamp(0.75rem, 1.5vw, 1rem);
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  margin: 0;
+}
+
+/* ===== Compass Rose ===== */
+
+.compass {
+  position: absolute;
+  bottom: 5%;
+  right: 5%;
+  z-index: 45;
+  opacity: 0.4;
+  pointer-events: none;
+}
+
+/* ===== Avatar Travel ===== */
+
+.overworld--traveling {
+  cursor: default;
+}
+
+.overworld--traveling .region-marker {
+  pointer-events: none;
+}
+
+/* Pulsing glow on travel target */
+.travel-target-glow {
+  fill: var(--color-gold);
+  opacity: 0;
+  animation: target-pulse 0.8s ease-in-out infinite alternate;
+}
+
+@keyframes target-pulse {
+  from { opacity: 0.08; }
+  to { opacity: 0.35; }
+}
+
+.travel-dust {
+  fill: var(--color-parchment-dark);
+  animation: dust-puff 0.8s ease-out forwards;
+}
+
+@keyframes dust-puff {
+  from { opacity: 0.4; }
+  to { opacity: 0; }
+}
+
+.travel-avatar__glow {
+  fill: var(--color-gold);
+  opacity: 0.15;
+  animation: avatar-pulse 1s ease-in-out infinite alternate;
+}
+
+@keyframes avatar-pulse {
+  from { opacity: 0.1; }
+  to { opacity: 0.25; }
+}
+
+/* ===== Responsive ===== */
+
+@media (max-width: 768px) {
+  .marker__icon {
+    font-size: 1.8px;
+  }
+
+  .banner__text {
+    font-size: 1.5px;
+  }
+
+  .overworld__title h1 {
+    letter-spacing: 0.1em;
+  }
+
+  .overworld__frame {
+    margin: 4px;
+  }
+
+  .cloud { display: none; }
+}

@@ -1,0 +1,884 @@
+/* ===== THE ELDER WILDS ===== */
+
+.elder-wilds {
+  position: relative;
+  min-height: 100vh;
+  overflow: hidden;
+  background: #060d06;
+}
+
+/* ===== SKY ===== */
+.ew__sky {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    #050a14 0%,
+    #0a1628 30%,
+    #0d1a20 60%,
+    #0a1a10 100%
+  );
+}
+
+.ew__stars {
+  position: absolute;
+  inset: 0;
+  background-image:
+    radial-gradient(1px 1px at 10% 15%, rgba(255, 255, 255, 0.6), transparent),
+    radial-gradient(1px 1px at 25% 8%, rgba(255, 255, 255, 0.4), transparent),
+    radial-gradient(1.5px 1.5px at 40% 20%, rgba(255, 255, 255, 0.5), transparent),
+    radial-gradient(1px 1px at 55% 5%, rgba(255, 255, 255, 0.3), transparent),
+    radial-gradient(1px 1px at 70% 18%, rgba(255, 255, 255, 0.5), transparent),
+    radial-gradient(1.5px 1.5px at 85% 12%, rgba(255, 255, 255, 0.4), transparent),
+    radial-gradient(1px 1px at 92% 25%, rgba(255, 255, 255, 0.3), transparent),
+    radial-gradient(1px 1px at 15% 35%, rgba(255, 255, 255, 0.2), transparent),
+    radial-gradient(1px 1px at 60% 30%, rgba(255, 255, 255, 0.3), transparent),
+    radial-gradient(1px 1px at 33% 28%, rgba(255, 255, 255, 0.4), transparent);
+  animation: twinkle 8s ease-in-out infinite alternate;
+}
+
+@keyframes twinkle {
+  0%, 100% { opacity: 0.8; }
+  50% { opacity: 1; }
+}
+
+.ew__aurora {
+  position: absolute;
+  top: 0;
+  left: 10%;
+  width: 80%;
+  height: 40%;
+  background: linear-gradient(
+    180deg,
+    transparent,
+    rgba(80, 200, 120, 0.03) 30%,
+    rgba(100, 180, 255, 0.02) 60%,
+    transparent
+  );
+  filter: blur(40px);
+  animation: aurora 15s ease-in-out infinite alternate;
+}
+
+@keyframes aurora {
+  0% { transform: translateX(-5%) scaleY(1); opacity: 0.5; }
+  50% { transform: translateX(5%) scaleY(1.2); opacity: 0.8; }
+  100% { transform: translateX(-3%) scaleY(0.9); opacity: 0.6; }
+}
+
+/* ===== MOON ===== */
+.ew__moon {
+  position: absolute;
+  top: 5%;
+  right: 15%;
+  z-index: 1;
+}
+
+.ew__moon-glow {
+  position: absolute;
+  width: 120px;
+  height: 120px;
+  top: -30px;
+  left: -30px;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    rgba(200, 210, 255, 0.15) 0%,
+    rgba(200, 210, 255, 0.05) 40%,
+    transparent 70%
+  );
+}
+
+.ew__moon-body {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle at 35% 35%,
+    #e0e5f0 0%,
+    #c8cfe0 40%,
+    #a0a8c0 100%
+  );
+  box-shadow:
+    0 0 30px rgba(200, 210, 255, 0.3),
+    0 0 60px rgba(200, 210, 255, 0.1);
+}
+
+/* ===== TREES ===== */
+.ew__trees-far,
+.ew__trees-mid,
+.ew__trees-near {
+  position: absolute;
+  bottom: 0;
+  left: -5%;
+  width: 110%;
+  z-index: 2;
+}
+
+.ew__trees-far {
+  height: 50%;
+  z-index: 2;
+}
+
+.ew__trees-mid {
+  height: 55%;
+  z-index: 3;
+}
+
+.ew__trees-near {
+  height: 45%;
+  z-index: 4;
+}
+
+.ew__tree-svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+/* ===== FOG ===== */
+.ew__fog {
+  position: absolute;
+  bottom: 15%;
+  left: -10%;
+  width: 120%;
+  height: 30%;
+  background: linear-gradient(
+    180deg,
+    transparent,
+    rgba(140, 160, 140, 0.04) 40%,
+    rgba(140, 160, 140, 0.08) 70%,
+    transparent
+  );
+  filter: blur(20px);
+  z-index: 5;
+  animation: fog-drift 25s ease-in-out infinite;
+}
+
+.ew__fog--2 {
+  bottom: 20%;
+  animation-duration: 35s;
+  animation-direction: reverse;
+  opacity: 0.6;
+}
+
+@keyframes fog-drift {
+  0%, 100% { transform: translateX(-3%); }
+  50% { transform: translateX(3%); }
+}
+
+/* ===== GROUND FOG ===== */
+.ew__ground-fog {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 15%;
+  background: linear-gradient(
+    180deg,
+    transparent,
+    rgba(20, 40, 20, 0.5) 50%,
+    rgba(10, 20, 10, 0.8)
+  );
+  z-index: 6;
+}
+
+/* ===== FLOATING RUNES ===== */
+.ew__floating-runes {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.ew__floating-rune {
+  position: absolute;
+  bottom: -10%;
+  font-size: 1.5rem;
+  color: rgba(201, 168, 76, 0.15);
+  text-shadow: 0 0 10px rgba(201, 168, 76, 0.1);
+  animation: rune-float linear infinite;
+}
+
+@keyframes rune-float {
+  0% {
+    transform: translateY(0) rotate(0deg);
+    opacity: 0;
+  }
+  10% {
+    opacity: 0.3;
+  }
+  90% {
+    opacity: 0.3;
+  }
+  100% {
+    transform: translateY(-110vh) rotate(360deg);
+    opacity: 0;
+  }
+}
+
+/* ===== ELVISH BORDERS ===== */
+.elvish-border {
+  position: fixed;
+  left: 0;
+  width: 100%;
+  height: 40px;
+  z-index: 20;
+  pointer-events: none;
+}
+
+.elvish-border--top {
+  top: 0;
+}
+
+.elvish-border--bottom {
+  bottom: 0;
+}
+
+.elvish-border__svg {
+  width: 100%;
+  height: 100%;
+}
+
+/* ===== CONTENT ===== */
+.ew__content {
+  position: relative;
+  z-index: 10;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  padding: var(--space-xl);
+}
+
+/* ===== NAVIGATION ===== */
+.ew__nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-xl);
+  flex-wrap: wrap;
+  gap: var(--space-md);
+}
+
+.ew__back-btn {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  font-family: var(--font-heading);
+  font-size: 0.85rem;
+  color: var(--color-parchment-dark);
+  padding: var(--space-sm) var(--space-md);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: rgba(26, 21, 16, 0.7);
+  backdrop-filter: blur(8px);
+  transition: all var(--transition-fast);
+}
+
+.ew__back-btn:hover {
+  color: var(--color-gold);
+  border-color: var(--color-border-strong);
+}
+
+.ew__back-arrow {
+  font-size: 1.1rem;
+}
+
+.ew__tabs {
+  display: flex;
+  gap: var(--space-xs);
+  background: rgba(26, 21, 16, 0.7);
+  backdrop-filter: blur(8px);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-xs);
+}
+
+.ew__tab {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  font-family: var(--font-heading);
+  font-size: 0.8rem;
+  color: var(--color-text-dim);
+  padding: var(--space-sm) var(--space-md);
+  border-radius: var(--radius-md);
+  transition: all var(--transition-fast);
+}
+
+.ew__tab:hover {
+  color: var(--color-parchment);
+  background: rgba(201, 168, 76, 0.05);
+}
+
+.ew__tab--active {
+  color: var(--color-gold);
+  background: rgba(201, 168, 76, 0.1);
+}
+
+.ew__tab-icon {
+  font-size: 1rem;
+}
+
+.ew__tab-label {
+  display: none;
+}
+
+@media (min-width: 640px) {
+  .ew__tab-label {
+    display: inline;
+  }
+}
+
+/* ===== PANELS ===== */
+.ew__panel {
+  flex: 1;
+  max-width: 900px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.ew__panel--full {
+  max-width: 1200px;
+}
+
+/* ===== EXPLORE TAB ===== */
+.ew__explore {
+  text-align: center;
+  padding: var(--space-3xl) var(--space-xl);
+}
+
+.ew__title {
+  font-size: 3rem;
+  color: var(--color-gold-bright);
+  text-shadow: 0 0 40px rgba(201, 168, 76, 0.3);
+  margin-bottom: var(--space-sm);
+}
+
+.ew__subtitle {
+  font-size: 1.2rem;
+  color: var(--color-parchment-dark);
+  margin-bottom: var(--space-2xl);
+}
+
+.ew__lore {
+  max-width: 600px;
+  margin: 0 auto var(--space-3xl);
+  text-align: left;
+  line-height: 1.8;
+  color: var(--color-parchment);
+}
+
+.ew__lore p {
+  margin-bottom: var(--space-md);
+}
+
+/* One Ring inscription */
+.ew__ring-inscription {
+  margin: var(--space-3xl) auto 0;
+  max-width: 500px;
+  padding: var(--space-lg);
+  border: 1px solid transparent;
+  border-radius: var(--radius-lg);
+  transition: all var(--transition-slow);
+  cursor: default;
+}
+
+.ew__ring-inscription:hover {
+  border-color: var(--color-flame);
+  background: rgba(212, 114, 26, 0.05);
+  box-shadow: 0 0 30px rgba(212, 114, 26, 0.1), inset 0 0 30px rgba(212, 114, 26, 0.05);
+}
+
+.ew__ring-text {
+  font-family: var(--font-accent);
+  font-size: 1rem;
+  color: var(--color-text-dim);
+  font-style: italic;
+  line-height: 1.6;
+  transition: color var(--transition-slow);
+}
+
+.ew__ring-inscription:hover .ew__ring-text {
+  color: var(--color-flame);
+  text-shadow: 0 0 10px rgba(212, 114, 26, 0.3);
+}
+
+/* ===== CONSTELLATION ===== */
+.constellation {
+  text-align: center;
+}
+
+.constellation__title {
+  font-size: 2rem;
+  color: var(--color-gold-bright);
+  margin-bottom: var(--space-sm);
+}
+
+.constellation__subtitle {
+  color: var(--color-parchment-dark);
+  margin-bottom: var(--space-lg);
+}
+
+.constellation__legend {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-lg);
+}
+
+.constellation__legend-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  font-family: var(--font-heading);
+  font-size: 0.75rem;
+  color: var(--group-color);
+  padding: var(--space-xs) var(--space-sm);
+  border: 1px solid color-mix(in srgb, var(--group-color) 30%, transparent);
+  border-radius: var(--radius-md);
+  background: rgba(0, 0, 0, 0.3);
+  transition: all var(--transition-fast);
+  opacity: 0.7;
+}
+
+.constellation__legend-item:hover,
+.constellation__legend-item--active {
+  opacity: 1;
+  background: rgba(0, 0, 0, 0.5);
+  border-color: var(--group-color);
+}
+
+.constellation__legend-icon {
+  font-size: 1rem;
+}
+
+.constellation__sky {
+  width: 100%;
+  max-height: 60vh;
+  background: radial-gradient(ellipse at center, rgba(20, 30, 50, 0.3), transparent);
+  border-radius: var(--radius-lg);
+}
+
+.constellation__tooltip {
+  position: fixed;
+  bottom: var(--space-3xl);
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(26, 21, 16, 0.95);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-md) var(--space-lg);
+  max-width: 350px;
+  text-align: center;
+  backdrop-filter: blur(12px);
+  box-shadow: var(--shadow-lg);
+  z-index: 30;
+}
+
+.constellation__tooltip h4 {
+  font-family: var(--font-heading);
+  color: var(--color-gold);
+  margin-bottom: var(--space-xs);
+}
+
+.constellation__tooltip p {
+  font-size: 0.9rem;
+  color: var(--color-parchment);
+  margin: 0;
+  line-height: 1.5;
+}
+
+/* ===== BESTIARY ===== */
+.bestiary {
+  text-align: center;
+}
+
+.bestiary__title {
+  font-size: 2rem;
+  color: var(--color-gold-bright);
+  margin-bottom: var(--space-sm);
+}
+
+.bestiary__subtitle {
+  color: var(--color-parchment-dark);
+  margin-bottom: var(--space-xl);
+}
+
+.bestiary__layout {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-lg);
+  text-align: left;
+}
+
+@media (min-width: 768px) {
+  .bestiary__layout {
+    grid-template-columns: 300px 1fr;
+  }
+}
+
+.bestiary__list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+  max-height: 60vh;
+  overflow-y: auto;
+}
+
+.bestiary__item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-sm) var(--space-md);
+  background: rgba(26, 21, 16, 0.6);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  text-align: left;
+  transition: all var(--transition-fast);
+}
+
+.bestiary__item:hover {
+  background: rgba(42, 35, 24, 0.8);
+  border-color: var(--color-border-strong);
+}
+
+.bestiary__item--active {
+  background: rgba(42, 35, 24, 0.9);
+  border-color: var(--color-gold-dim);
+}
+
+.bestiary__threat-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.bestiary__item-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.bestiary__item-name {
+  display: block;
+  font-family: var(--font-heading);
+  font-size: 0.85rem;
+  color: var(--color-parchment);
+}
+
+.bestiary__item-class {
+  display: block;
+  font-size: 0.7rem;
+  color: var(--color-text-dim);
+  font-style: italic;
+}
+
+.bestiary__item-threat {
+  font-size: 0.7rem;
+  font-family: var(--font-heading);
+  white-space: nowrap;
+}
+
+/* Detail panel */
+.bestiary__detail {
+  background: rgba(26, 21, 16, 0.8);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-lg);
+  backdrop-filter: blur(8px);
+}
+
+.bestiary__header h3 {
+  font-size: 1.5rem;
+  color: var(--color-gold);
+  margin-bottom: var(--space-xs);
+}
+
+.bestiary__classification {
+  display: block;
+  font-style: italic;
+  color: var(--color-text-dim);
+  font-size: 0.85rem;
+  margin-bottom: var(--space-sm);
+}
+
+.bestiary__meta {
+  display: flex;
+  gap: var(--space-lg);
+  font-size: 0.8rem;
+  margin-bottom: var(--space-md);
+}
+
+.bestiary__description {
+  line-height: 1.7;
+  color: var(--color-parchment);
+  margin-bottom: var(--space-lg);
+}
+
+.bestiary__stats {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-lg);
+}
+
+.bestiary__stat {
+  display: grid;
+  grid-template-columns: 80px 1fr 40px;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.bestiary__stat-label {
+  font-family: var(--font-heading);
+  font-size: 0.75rem;
+  color: var(--color-parchment-dark);
+  text-transform: capitalize;
+}
+
+.bestiary__stat-bar {
+  height: 6px;
+  background: var(--color-iron);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.bestiary__stat-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--color-gold-dim), var(--color-gold));
+  border-radius: 3px;
+}
+
+.bestiary__stat-value {
+  font-family: var(--font-heading);
+  font-size: 0.75rem;
+  color: var(--color-gold);
+  text-align: right;
+}
+
+.bestiary__weakness {
+  font-size: 0.9rem;
+  color: var(--color-parchment);
+  margin-bottom: var(--space-md);
+  padding: var(--space-sm) var(--space-md);
+  background: rgba(218, 126, 126, 0.05);
+  border-left: 2px solid rgba(218, 126, 126, 0.3);
+  border-radius: var(--radius-sm);
+}
+
+.bestiary__weakness strong {
+  color: #da7e7e;
+}
+
+.bestiary__lore {
+  font-size: 0.85rem;
+  color: var(--color-text-dim);
+  line-height: 1.7;
+  padding-top: var(--space-md);
+  border-top: 1px solid var(--color-border);
+}
+
+/* ===== RUNE CIRCLE ===== */
+.rune-circle {
+  text-align: center;
+}
+
+.rune-circle__title {
+  font-size: 2rem;
+  color: var(--color-gold-bright);
+  margin-bottom: var(--space-sm);
+}
+
+.rune-circle__subtitle {
+  color: var(--color-parchment-dark);
+  margin-bottom: var(--space-md);
+}
+
+.rune-circle__info {
+  display: flex;
+  justify-content: center;
+  gap: var(--space-xl);
+  font-family: var(--font-heading);
+  font-size: 0.8rem;
+  color: var(--color-text-dim);
+  margin-bottom: var(--space-xl);
+}
+
+.rune-circle__stones {
+  position: relative;
+  width: min(400px, 90vw);
+  height: min(400px, 90vw);
+  margin: 0 auto var(--space-xl);
+}
+
+.rune-circle__inner-ring {
+  position: absolute;
+  top: 15%;
+  left: 15%;
+  width: 70%;
+  height: 70%;
+  border: 1px solid rgba(201, 168, 76, 0.1);
+  border-radius: 50%;
+}
+
+/* Individual rune stones */
+.rune-stone {
+  position: absolute;
+  width: 56px;
+  height: 56px;
+  margin-left: -28px;
+  margin-top: -28px;
+  border-radius: 50%;
+  background: rgba(42, 35, 24, 0.8);
+  border: 2px solid var(--color-border);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--transition-fast);
+  cursor: pointer;
+}
+
+.rune-stone:hover:not(:disabled) {
+  border-color: var(--color-gold);
+  transform: scale(1.1);
+}
+
+.rune-stone:disabled {
+  cursor: default;
+}
+
+.rune-stone--active {
+  border-color: var(--color-gold-bright) !important;
+  background: rgba(201, 168, 76, 0.2);
+  box-shadow: 0 0 20px rgba(201, 168, 76, 0.4), 0 0 40px rgba(201, 168, 76, 0.2);
+  transform: scale(1.15);
+}
+
+.rune-stone--used {
+  border-color: var(--color-gold-dim);
+}
+
+.rune-stone__glow {
+  position: absolute;
+  inset: -8px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(201, 168, 76, 0.15), transparent);
+  opacity: 0;
+  transition: opacity var(--transition-fast);
+}
+
+.rune-stone--active .rune-stone__glow {
+  opacity: 1;
+}
+
+.rune-stone__symbol {
+  font-size: 1.4rem;
+  color: var(--color-parchment);
+  transition: color var(--transition-fast);
+  line-height: 1;
+}
+
+.rune-stone--active .rune-stone__symbol {
+  color: var(--color-gold-bright);
+  text-shadow: 0 0 10px rgba(201, 168, 76, 0.5);
+}
+
+.rune-stone__name {
+  font-family: var(--font-heading);
+  font-size: 0.5rem;
+  color: var(--color-text-dim);
+  margin-top: 2px;
+}
+
+/* Center stone */
+.rune-circle__center {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.rune-circle__start {
+  font-family: var(--font-heading);
+  font-size: 1rem;
+  color: var(--color-gold);
+  padding: var(--space-sm) var(--space-lg);
+  background: rgba(42, 35, 24, 0.8);
+  border: 1px solid var(--color-gold-dim);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.rune-circle__start:hover {
+  background: rgba(201, 168, 76, 0.15);
+  border-color: var(--color-gold);
+  box-shadow: var(--shadow-glow);
+}
+
+.rune-circle__status {
+  font-family: var(--font-heading);
+  font-size: 0.9rem;
+  color: var(--color-parchment-dark);
+}
+
+.rune-circle__status--victory {
+  color: var(--color-gold-bright);
+  text-shadow: 0 0 15px rgba(201, 168, 76, 0.5);
+  font-size: 1.2rem;
+}
+
+/* Message */
+.rune-circle__message {
+  font-family: var(--font-accent);
+  font-size: 1.1rem;
+  padding: var(--space-md) var(--space-lg);
+  border-radius: var(--radius-md);
+  max-width: 400px;
+  margin: 0 auto var(--space-md);
+}
+
+.rune-circle__message--success {
+  color: var(--color-gold-bright);
+  background: rgba(201, 168, 76, 0.1);
+  border: 1px solid rgba(201, 168, 76, 0.2);
+}
+
+.rune-circle__message--failure {
+  color: #da7e7e;
+  background: rgba(218, 126, 126, 0.1);
+  border: 1px solid rgba(218, 126, 126, 0.2);
+}
+
+.rune-circle__reset {
+  font-family: var(--font-heading);
+  font-size: 0.8rem;
+  color: var(--color-text-dim);
+  padding: var(--space-xs) var(--space-md);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: transparent;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.rune-circle__reset:hover {
+  color: var(--color-parchment);
+  border-color: var(--color-border-strong);
+}
+
+/* ===== VIGNETTE ===== */
+.ew__vignette {
+  position: fixed;
+  inset: 0;
+  background: radial-gradient(
+    ellipse at center,
+    transparent 40%,
+    rgba(0, 0, 0, 0.5) 100%
+  );
+  pointer-events: none;
+  z-index: 15;
+}
