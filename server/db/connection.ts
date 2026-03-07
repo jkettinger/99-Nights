@@ -1,7 +1,7 @@
 import mysql from 'mysql2/promise';
-import dotenv from 'dotenv';
 
-dotenv.config({ path: '../../.env' });
+// In local dev, dotenv is loaded by the Express server.
+// In Vercel, env vars are injected automatically.
 
 const pool = mysql.createPool({
   host: process.env.DB_HOST || 'localhost',
