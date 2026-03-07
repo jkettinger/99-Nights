@@ -10,7 +10,6 @@
   display: none;
 }
 
-/* Each half holds layered fog wisps */
 .fog-half {
   position: relative;
   width: 50%;
@@ -30,67 +29,8 @@
   opacity: 0;
 }
 
-/* Individual fog layers — stacked for depth */
-.fog-layer {
-  position: absolute;
-  inset: 0;
-  background: var(--color-bg);
-}
-
-/* Dense base layer */
-.fog-layer--base {
-  background: var(--color-bg);
-}
-
-/* Wispy mid-layers with radial gradient smoke puffs */
-.fog-layer--wisp-1 {
-  background:
-    radial-gradient(ellipse 80% 60% at 30% 40%, rgba(180, 190, 200, 0.15) 0%, transparent 70%),
-    radial-gradient(ellipse 60% 80% at 70% 60%, rgba(160, 170, 180, 0.12) 0%, transparent 60%),
-    radial-gradient(ellipse 90% 50% at 50% 30%, rgba(200, 205, 210, 0.1) 0%, transparent 80%),
-    var(--color-bg);
-  animation: fog-drift-1 4s ease-in-out infinite alternate;
-}
-
-.fog-layer--wisp-2 {
-  background:
-    radial-gradient(ellipse 70% 70% at 60% 50%, rgba(150, 160, 170, 0.13) 0%, transparent 65%),
-    radial-gradient(ellipse 50% 90% at 25% 70%, rgba(190, 195, 200, 0.1) 0%, transparent 55%),
-    radial-gradient(ellipse 100% 40% at 80% 20%, rgba(170, 180, 190, 0.08) 0%, transparent 75%);
-  animation: fog-drift-2 5s ease-in-out infinite alternate;
-}
-
-.fog-layer--wisp-3 {
-  background:
-    radial-gradient(ellipse 120% 60% at 40% 55%, rgba(200, 210, 220, 0.08) 0%, transparent 70%),
-    radial-gradient(ellipse 40% 100% at 75% 35%, rgba(140, 150, 165, 0.1) 0%, transparent 60%);
-  animation: fog-drift-3 6s ease-in-out infinite alternate;
-  filter: blur(20px);
-}
-
-/* Bright highlight layer — like light cutting through mist */
-.fog-layer--glow {
-  background:
-    radial-gradient(ellipse 60% 40% at 50% 45%, rgba(232, 224, 214, 0.06) 0%, transparent 70%);
-  animation: fog-pulse 3s ease-in-out infinite alternate;
-}
-
-@keyframes fog-drift-1 {
-  from { transform: translateX(-3%) translateY(-2%); }
-  to   { transform: translateX(3%) translateY(2%); }
-}
-
-@keyframes fog-drift-2 {
-  from { transform: translateX(2%) translateY(3%) scale(1.02); }
-  to   { transform: translateX(-2%) translateY(-1%) scale(0.98); }
-}
-
-@keyframes fog-drift-3 {
-  from { transform: translateX(-4%) translateY(1%); }
-  to   { transform: translateX(2%) translateY(-3%); }
-}
-
-@keyframes fog-pulse {
-  from { opacity: 0.4; }
-  to   { opacity: 0.8; }
+.fog-canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
 }
