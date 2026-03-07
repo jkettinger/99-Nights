@@ -1,5 +1,6 @@
 import { FormEvent, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import './pages.css'
 
 export default function Login() {
   const navigate = useNavigate()
@@ -33,10 +34,10 @@ export default function Login() {
   }
 
   return (
-    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh' }}>
-      <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem', width: '300px' }}>
+    <div className="page-center">
+      <form onSubmit={handleSubmit} className="login-form">
         <h1>Login</h1>
-        {error && <p style={{ color: 'crimson' }}>{error}</p>}
+        {error && <p className="login-error">{error}</p>}
         <input
           type="text"
           placeholder="Username"

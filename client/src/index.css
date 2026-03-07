@@ -1,0 +1,28 @@
+:root {
+  --color-bg: #1A1E25;
+  --color-secondary: #3A4554;
+  --color-text: #8FA3B1;
+  --color-accent: #A81C2A;
+  --font-title: 'Cinzel', serif;
+  --font-body: 'IM Fell English', serif;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-body);
+  line-height: 1.6;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-title);
+  color: #E8E0D6;
+  margin: 0;
+}

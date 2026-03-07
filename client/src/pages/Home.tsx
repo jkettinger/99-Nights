@@ -1,7 +1,9 @@
+import './pages.css'
+
 export default function Home() {
   return (
-    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh' }}>
-      <h1>Jiggling</h1>
+    <div className="page-center">
+      <h1 className="home-title">Jiggling</h1>
     </div>
   )
 }
