@@ -7,10 +7,25 @@
 }
 
 /* Home */
+.home-page {
+  background: url('/images/map.jpg') center center / cover no-repeat;
+  position: relative;
+}
+
+.home-page::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(26, 30, 37, 0.4);
+  pointer-events: none;
+}
+
 .home-title {
+  position: relative;
+  z-index: 1;
   font-size: 3.5rem;
   letter-spacing: 0.15em;
-  text-shadow: 0 0 40px rgba(168, 28, 42, 0.4);
+  text-shadow: 0 0 40px rgba(168, 28, 42, 0.4), 0 2px 20px rgba(0, 0, 0, 0.8);
 }
 
 /* Login */
