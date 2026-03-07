@@ -4,48 +4,11 @@
   z-index: 9999;
   pointer-events: none;
   background: var(--color-bg);
+  transition: opacity 2.5s ease-out;
 }
 
-.fog-half {
-  position: absolute;
-  top: 0;
-  height: 100%;
-  width: 50%;
-  overflow: hidden;
-  transition: transform 2s cubic-bezier(0.4, 0, 0.2, 1),
-              opacity 2s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.fog-left {
-  left: 0;
-}
-
-.fog-right {
-  right: 0;
-}
-
-.fog-left.fog-clear {
-  transform: translateX(-120%);
+.fog-overlay.fog-fading {
   opacity: 0;
-}
-
-.fog-right.fog-clear {
-  transform: translateX(120%);
-  opacity: 0;
-}
-
-/* The particles container spans the full viewport width
-   so particles seamlessly cross the center line */
-.fog-particles-wrap {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 200%; /* full viewport width inside each 50% half */
-  height: 100%;
-}
-
-.fog-particles-wrap--right {
-  left: -100%; /* offset so the right half of particles shows */
 }
 
 .fog-particles,

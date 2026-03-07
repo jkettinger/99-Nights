@@ -8,7 +8,7 @@ const fogConfig: ISourceOptions = {
   fullScreen: false,
   background: { color: 'transparent' },
   particles: {
-    number: { value: 80 },
+    number: { value: 90 },
     color: { value: ['#c8ccd4', '#b0b8c4', '#9aa4b0', '#d0d4da'] },
     shape: { type: 'image', options: { image: { src: '/images/smoke.png', width: 256, height: 256 } } },
     opacity: {
@@ -16,7 +16,7 @@ const fogConfig: ISourceOptions = {
       animation: { enable: true, speed: 0.3, startValue: 'random', sync: false },
     },
     size: {
-      value: { min: 150, max: 400 },
+      value: { min: 150, max: 450 },
       animation: { enable: true, speed: 5, startValue: 'random', sync: false },
     },
     move: {
@@ -26,7 +26,6 @@ const fogConfig: ISourceOptions = {
       random: true,
       straight: false,
       outModes: { default: 'out' as const },
-      drift: 0,
     },
     rotate: {
       value: { min: 0, max: 360 },
@@ -43,7 +42,8 @@ const fogConfig: ISourceOptions = {
 
 export default function FogOverlay() {
   const [ready, setReady] = useState(false)
-  const [phase, setPhase] = useState<'fog' | 'clearing' | 'done'>('fog')
+  const [fading, setFading] = useState(false)
+  const [done, setDone] = useState(false)
 
   useEffect(() => {
     initParticlesEngine(async (engine) => {
@@ -53,33 +53,25 @@ export default function FogOverlay() {
 
   useEffect(() => {
     if (!ready) return
-    const t1 = setTimeout(() => setPhase('clearing'), 3000)
-    const t2 = setTimeout(() => setPhase('done'), 5200)
+    const t1 = setTimeout(() => setFading(true), 3000)
+    const t2 = setTimeout(() => setDone(true), 5500)
     return () => { clearTimeout(t1); clearTimeout(t2) }
   }, [ready])
 
   const particlesLoaded = useCallback(async () => {}, [])
 
-  if (phase === 'done' || !ready) {
-    if (phase === 'done') return null
-    // Show solid bg while engine loads to prevent flash
-    return <div className="fog-overlay" />
-  }
-
-  const clearing = phase === 'clearing'
+  if (done) return null
 
   return (
-    <div className="fog-overlay">
-      <div className={`fog-half fog-left${clearing ? ' fog-clear' : ''}`}>
-        <div className="fog-particles-wrap">
-          <Particles id="fog-left" options={fogConfig} particlesLoaded={particlesLoaded} className="fog-particles" />
-        </div>
-      </div>
-      <div className={`fog-half fog-right${clearing ? ' fog-clear' : ''}`}>
-        <div className="fog-particles-wrap fog-particles-wrap--right">
-          <Particles id="fog-right" options={fogConfig} particlesLoaded={particlesLoaded} className="fog-particles" />
-        </div>
-      </div>
+    <div className={`fog-overlay${fading ? ' fog-fading' : ''}`}>
+      {ready && (
+        <Particles
+          id="fog"
+          options={fogConfig}
+          particlesLoaded={particlesLoaded}
+          className="fog-particles"
+        />
+      )}
     </div>
   )
 }
