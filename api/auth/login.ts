@@ -1,7 +1,7 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
-import pool from '../../server/db/connection.js';
+import pool from '../_db.js';
 import type { RowDataPacket } from 'mysql2';
 
 interface UserRow extends RowDataPacket {

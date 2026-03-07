@@ -1,7 +1,7 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { readdir, readFile } from 'fs/promises';
 import path from 'path';
-import pool from '../server/db/connection.js';
+import pool from './_db.js';
 
 async function ensureMigrationsTable(): Promise<void> {
   await pool.execute(`

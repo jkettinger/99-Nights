@@ -11,7 +11,14 @@
     "install:all": "npm install --prefix client && npm install --prefix server"
   },
   "devDependencies": {
+    "@types/bcrypt": "^6.0.0",
+    "@types/jsonwebtoken": "^9.0.10",
     "@vercel/node": "^5.6.11",
     "concurrently": "^8.2.2"
+  },
+  "dependencies": {
+    "bcrypt": "^6.0.0",
+    "jsonwebtoken": "^9.0.3",
+    "mysql2": "^3.19.0"
   }
 }
