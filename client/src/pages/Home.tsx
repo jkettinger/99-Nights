@@ -16,8 +16,9 @@ interface Destination {
 }
 
 export default function Home() {
-  const [visible, setVisible] = useState(false)
-  const [shrunk, setShrunk] = useState(false)
+  const hasPlayed = sessionStorage.getItem('intro-played') === 'true'
+  const [visible, setVisible] = useState(hasPlayed)
+  const [shrunk, setShrunk] = useState(hasPlayed)
   const [muted, setMuted] = useState(() => sessionStorage.getItem('audio-muted') === 'true')
   const [volume, setVolume] = useState(() => {
     const stored = sessionStorage.getItem('audio-volume')
@@ -37,9 +38,10 @@ export default function Home() {
   const debug = searchParams.get('debug') === 'true'
 
   useEffect(() => {
+    if (hasPlayed) return
     const timer = setTimeout(() => setVisible(true), 5500)
     return () => clearTimeout(timer)
-  }, [])
+  }, [hasPlayed])
 
   useEffect(() => () => { clearTimeout(travelTimeout.current) }, [])
 
@@ -51,14 +53,18 @@ export default function Home() {
   }, [])
 
   useEffect(() => {
+    if (hasPlayed) return
     const el = warriorRef.current
     if (!el) return
     const onEnd = (e: AnimationEvent) => {
-      if (e.animationName === 'warrior-shrink') setShrunk(true)
+      if (e.animationName === 'warrior-shrink') {
+        setShrunk(true)
+        sessionStorage.setItem('intro-played', 'true')
+      }
     }
     el.addEventListener('animationend', onEnd)
     return () => el.removeEventListener('animationend', onEnd)
-  }, [])
+  }, [hasPlayed])
 
   useEffect(() => {
     const audio = audioRef.current
@@ -160,30 +166,29 @@ export default function Home() {
 
         <div className="name-card">
           <h2>Jim Kettinger</h2>
+          {shrunk && destinations.length > 0 && (
+            <nav className="map-legend" aria-label="Destinations">
+              {destinations.map((dest, i) => {
+                const entry = dest.icon ? ICON_MAP[dest.icon] : undefined
+                return (
+                  <button
+                    key={dest.id}
+                    type="button"
+                    className={`map-legend__item${traveling ? ' map-legend__item--traveling' : ''}`}
+                    style={{ animationDelay: `${i * 0.08}s` }}
+                    onClick={() => handleMarkerClick(dest)}
+                    disabled={traveling}
+                  >
+                    <span className="map-legend__icon">
+                      {entry ? <entry.component size={12} /> : '\u2726'}
+                    </span>
+                    <span className="map-legend__name">{dest.name}</span>
+                  </button>
+                )
+              })}
+            </nav>
+          )}
         </div>
-
-        {shrunk && destinations.length > 0 && (
-          <nav className="map-legend" aria-label="Destinations">
-            {destinations.map((dest, i) => {
-              const entry = dest.icon ? ICON_MAP[dest.icon] : undefined
-              return (
-                <button
-                  key={dest.id}
-                  type="button"
-                  className={`map-legend__item${traveling ? ' map-legend__item--traveling' : ''}`}
-                  style={{ animationDelay: `${i * 0.08}s` }}
-                  onClick={() => handleMarkerClick(dest)}
-                  disabled={traveling}
-                >
-                  <span className="map-legend__icon">
-                    {entry ? <entry.component size={12} /> : '\u2726'}
-                  </span>
-                  <span className="map-legend__name">{dest.name}</span>
-                </button>
-              )
-            })}
-          </nav>
-        )}
 
         <div
           ref={warriorRef}

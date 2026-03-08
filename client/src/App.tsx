@@ -10,7 +10,7 @@ function AppRoutes() {
   const location = useLocation()
   return (
     <>
-      {location.pathname === '/' && <FogOverlay />}
+      {location.pathname === '/' && sessionStorage.getItem('intro-played') !== 'true' && <FogOverlay />}
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/destination/:slug" element={<Destination />} />
