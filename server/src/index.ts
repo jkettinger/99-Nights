@@ -4,6 +4,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import dotenv from 'dotenv';
 import authRoutes from './routes/auth.js';
+import destinationRoutes from './routes/destinations.js';
 import migrateRoutes from './routes/migrate.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -29,6 +30,7 @@ app.get('/api/health', (_req, res) => {
 });
 
 app.use('/api/auth', authRoutes);
+app.use('/api/destinations', destinationRoutes);
 app.use('/api', migrateRoutes);
 
 // In production, serve the built React app
