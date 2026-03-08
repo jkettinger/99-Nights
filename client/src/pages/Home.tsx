@@ -4,7 +4,7 @@ import './pages.css'
 export default function Home() {
   const [visible, setVisible] = useState(false)
   const [shrunk, setShrunk] = useState(false)
-  const [muted, setMuted] = useState(true)
+  const [muted, setMuted] = useState(false)
   const [volume, setVolume] = useState(0.75)
   const [audioFailed, setAudioFailed] = useState(false)
   const audioRef = useRef<HTMLAudioElement>(null)
@@ -23,6 +23,15 @@ export default function Home() {
     }
     el.addEventListener('animationend', onEnd)
     return () => el.removeEventListener('animationend', onEnd)
+  }, [])
+
+  useEffect(() => {
+    const audio = audioRef.current
+    if (!audio) return
+    audio.play().catch(() => {
+      audio.muted = true
+      setMuted(true)
+    })
   }, [])
 
   useEffect(() => {
@@ -67,7 +76,7 @@ export default function Home() {
 
   return (
     <div className="page-center home-page">
-      <audio ref={audioRef} src="/audio/echos.mp3" loop autoPlay muted
+      <audio ref={audioRef} src="/audio/echos.mp3" loop autoPlay
         onError={() => setAudioFailed(true)} />
 
       <div className="name-card">

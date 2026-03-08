@@ -47,7 +47,7 @@
   position: absolute;
   left: 50%;
   top: 50%;
-  transform: translate(-50%, -50%) scaleX(-1);
+  transform: translate(-50%, -50%);
   z-index: 1;
   pointer-events: none;
   height: 55vh;
@@ -82,7 +82,7 @@
 
 /* Warrior after shrink — lock final position and remove scaleX flip for game piece */
 .warrior--shrunk {
-  height: 70px;
+  height: 95px;
   top: 82%;
   transform: translate(-50%, -50%);
   filter: drop-shadow(0 0 8px rgba(168, 28, 42, 0.5)) drop-shadow(0 0 20px rgba(168, 28, 42, 0.2));
@@ -99,13 +99,13 @@
   from {
     height: 55vh;
     top: 50%;
-    transform: translate(-50%, -50%) scaleX(-1);
+    transform: translate(-50%, -50%);
     filter: none;
   }
   to {
-    height: 70px;
+    height: 95px;
     top: 82%;
-    transform: translate(-50%, -50%) scaleX(-1);
+    transform: translate(-50%, -50%);
     filter: drop-shadow(0 0 8px rgba(168, 28, 42, 0.5)) drop-shadow(0 0 20px rgba(168, 28, 42, 0.2));
   }
 }
