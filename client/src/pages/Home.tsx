@@ -87,7 +87,7 @@ export default function Home() {
         className={`warrior${visible ? ' warrior--visible' : ''}${shrunk ? ' warrior--shrunk' : ''}`}
       >
         <img
-          src="/images/warrior.png"
+          src="/images/warrior-flipped.png"
           alt="Warrior avatar"
           className={`warrior-img${shrunk ? ' warrior-img--hidden' : ''}`}
         />
