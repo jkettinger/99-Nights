@@ -162,6 +162,29 @@ export default function Home() {
           <h2>Jim Kettinger</h2>
         </div>
 
+        {shrunk && destinations.length > 0 && (
+          <nav className="map-legend" aria-label="Destinations">
+            {destinations.map((dest, i) => {
+              const entry = dest.icon ? ICON_MAP[dest.icon] : undefined
+              return (
+                <button
+                  key={dest.id}
+                  type="button"
+                  className={`map-legend__item${traveling ? ' map-legend__item--traveling' : ''}`}
+                  style={{ animationDelay: `${i * 0.08}s` }}
+                  onClick={() => handleMarkerClick(dest)}
+                  disabled={traveling}
+                >
+                  <span className="map-legend__icon">
+                    {entry ? <entry.component size={12} /> : '\u2726'}
+                  </span>
+                  <span className="map-legend__name">{dest.name}</span>
+                </button>
+              )
+            })}
+          </nav>
+        )}
+
         <div
           ref={warriorRef}
           className={`warrior${visible ? ' warrior--visible' : ''}${shrunk ? ' warrior--shrunk' : ''}`}
