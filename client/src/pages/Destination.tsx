@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useParams, Link } from 'react-router-dom'
+import { ICON_MAP } from '../components/iconMap'
 import './pages.css'
 
 interface DestinationData {
@@ -34,7 +35,10 @@ export default function Destination() {
     <div className="page-center destination-page">
       <div className="destination-card">
         <span className="destination-card__icon">
-          {destination?.icon || '\u2726'}
+          {(() => {
+            const entry = destination?.icon ? ICON_MAP[destination.icon] : undefined
+            return entry ? <entry.component size={32} /> : '\u2726'
+          })()}
         </span>
         <h1>{destination?.name || slug}</h1>
         {destination?.description && (

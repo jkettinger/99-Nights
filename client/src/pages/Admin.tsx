@@ -1,4 +1,6 @@
 import { useState, useEffect, FormEvent } from 'react'
+import IconPicker from '../components/IconPicker'
+import { ICON_MAP } from '../components/iconMap'
 import './pages.css'
 
 interface Destination {
@@ -229,11 +231,9 @@ export default function Admin() {
               </label>
               <label>
                 <span>Icon</span>
-                <input
-                  type="text"
+                <IconPicker
                   value={form.icon}
-                  onChange={(e) => updateField('icon', e.target.value)}
-                  placeholder="castle"
+                  onChange={(icon) => updateField('icon', icon)}
                 />
               </label>
             </div>
@@ -272,7 +272,12 @@ export default function Admin() {
                       <td>{dest.name}</td>
                       <td className="admin-table__slug">{dest.slug}</td>
                       <td className="admin-table__coords">{dest.map_x}, {dest.map_y}</td>
-                      <td>{dest.icon || '—'}</td>
+                      <td>
+                        {(() => {
+                          const entry = dest.icon ? ICON_MAP[dest.icon] : undefined
+                          return entry ? <entry.component size={16} /> : '—'
+                        })()}
+                      </td>
                       <td className="admin-table__actions">
                         <button className="admin-btn--edit" onClick={() => startEdit(dest)}>Edit</button>
                         {confirmDeleteId === dest.id ? (

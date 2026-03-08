@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { getPathToDestination } from '../data/roadPaths'
+import { ICON_MAP } from '../components/iconMap'
 import WaypointEditor from '../components/WaypointEditor'
 import './pages.css'
 
@@ -17,8 +18,13 @@ interface Destination {
 export default function Home() {
   const [visible, setVisible] = useState(false)
   const [shrunk, setShrunk] = useState(false)
-  const [muted, setMuted] = useState(false)
-  const [volume, setVolume] = useState(0.75)
+  const [muted, setMuted] = useState(() => sessionStorage.getItem('audio-muted') === 'true')
+  const [volume, setVolume] = useState(() => {
+    const stored = sessionStorage.getItem('audio-volume')
+    if (stored === null) return 0.75
+    const val = parseFloat(stored)
+    return Number.isFinite(val) && val >= 0 && val <= 1 ? val : 0.75
+  })
   const [audioFailed, setAudioFailed] = useState(false)
   const [destinations, setDestinations] = useState<Destination[]>([])
   const [avatarPos, setAvatarPos] = useState({ x: 52, y: 83 })
@@ -57,10 +63,15 @@ export default function Home() {
   useEffect(() => {
     const audio = audioRef.current
     if (!audio) return
-    audio.play().catch(() => {
+    const wasMuted = sessionStorage.getItem('audio-muted') === 'true'
+    if (wasMuted) {
       audio.muted = true
-      setMuted(true)
-    })
+    } else {
+      audio.play().catch(() => {
+        audio.muted = true
+        setMuted(true)
+      })
+    }
   }, [])
 
   useEffect(() => {
@@ -75,29 +86,36 @@ export default function Home() {
     if (muted) {
       audio.muted = false
       setMuted(false)
+      sessionStorage.setItem('audio-muted', 'false')
       audio.play().catch(() => {
         audio.muted = true
         setMuted(true)
+        sessionStorage.setItem('audio-muted', 'true')
       })
     } else {
       audio.muted = true
       setMuted(true)
+      sessionStorage.setItem('audio-muted', 'true')
     }
   }
 
   const handleVolume = (e: React.ChangeEvent<HTMLInputElement>) => {
     const val = parseFloat(e.target.value)
     setVolume(val)
+    sessionStorage.setItem('audio-volume', String(val))
     if (val === 0) {
       setMuted(true)
+      sessionStorage.setItem('audio-muted', 'true')
       if (audioRef.current) audioRef.current.muted = true
     } else if (muted) {
       setMuted(false)
+      sessionStorage.setItem('audio-muted', 'false')
       if (audioRef.current) {
         audioRef.current.muted = false
         audioRef.current.play().catch(() => {
           audioRef.current!.muted = true
           setMuted(true)
+          sessionStorage.setItem('audio-muted', 'true')
         })
       }
     }
@@ -133,7 +151,7 @@ export default function Home() {
 
   return (
     <div className="home-page">
-      <audio ref={audioRef} src="/audio/echos.mp3" loop autoPlay
+      <audio ref={audioRef} src="/audio/echos.mp3" loop
         onError={() => setAudioFailed(true)} />
 
       <div className="map-container">
@@ -178,7 +196,12 @@ export default function Home() {
             onClick={() => handleMarkerClick(dest)}
             disabled={traveling}
           >
-            <span className="map-marker__icon">{dest.icon || '\u2726'}</span>
+            <span className="map-marker__icon">
+              {(() => {
+                const entry = dest.icon ? ICON_MAP[dest.icon] : undefined
+                return entry ? <entry.component size={16} /> : '\u2726'
+              })()}
+            </span>
             <span className="map-marker__label">{dest.name}</span>
           </button>
         ))}
