@@ -115,6 +115,93 @@
   to   { opacity: 1; }
 }
 
+/* ── Map destination markers ── */
+.map-marker {
+  position: absolute;
+  z-index: 1;
+  transform: translate(-50%, -50%);
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+  min-width: 44px;
+  min-height: 44px;
+  justify-content: center;
+  opacity: 0;
+  animation: marker-arrive 0.5s ease-out forwards;
+}
+
+.map-marker__icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  background: rgba(40, 46, 58, 0.85);
+  border: 1px solid rgba(143, 163, 177, 0.25);
+  border-radius: 50%;
+  font-size: 0.85rem;
+  color: #E8E0D6;
+  transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.map-marker__label {
+  font-family: var(--font-title);
+  font-size: 0.6rem;
+  letter-spacing: 0.08em;
+  color: #E8E0D6;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
+  white-space: nowrap;
+  opacity: 0;
+  transform: translateY(-4px);
+  transition: opacity 0.25s ease, transform 0.25s ease;
+  pointer-events: none;
+}
+
+.map-marker:hover .map-marker__icon,
+.map-marker:focus-visible .map-marker__icon {
+  transform: scale(1.2);
+  border-color: var(--color-accent);
+  box-shadow: 0 0 10px rgba(168, 28, 42, 0.4), 0 0 20px rgba(168, 28, 42, 0.15);
+}
+
+.map-marker:hover .map-marker__label,
+.map-marker:focus-visible .map-marker__label {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.map-marker:focus-visible {
+  outline: none;
+}
+
+.map-marker:focus-visible .map-marker__icon {
+  outline: 1px solid var(--color-accent);
+  outline-offset: 3px;
+}
+
+@media (hover: none) {
+  .map-marker__label {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes marker-arrive {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.6);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
 /* Audio control — bottom-right */
 .audio-control {
   position: absolute;

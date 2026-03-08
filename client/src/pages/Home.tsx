@@ -1,18 +1,36 @@
 import { useState, useEffect, useRef } from 'react'
 import './pages.css'
 
+interface Destination {
+  id: number
+  name: string
+  slug: string
+  description: string | null
+  map_x: number
+  map_y: number
+  icon: string | null
+}
+
 export default function Home() {
   const [visible, setVisible] = useState(false)
   const [shrunk, setShrunk] = useState(false)
   const [muted, setMuted] = useState(false)
   const [volume, setVolume] = useState(0.75)
   const [audioFailed, setAudioFailed] = useState(false)
+  const [destinations, setDestinations] = useState<Destination[]>([])
   const audioRef = useRef<HTMLAudioElement>(null)
   const warriorRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     const timer = setTimeout(() => setVisible(true), 5500)
     return () => clearTimeout(timer)
+  }, [])
+
+  useEffect(() => {
+    fetch('/api/destinations')
+      .then((res) => res.ok ? res.json() : [])
+      .then((data) => setDestinations(Array.isArray(data) ? data : []))
+      .catch(() => {})
   }, [])
 
   useEffect(() => {
@@ -99,6 +117,23 @@ export default function Home() {
           />
         )}
       </div>
+
+      {shrunk && destinations.map((dest, i) => (
+        <button
+          key={dest.id}
+          className="map-marker"
+          style={{
+            left: `${dest.map_x}%`,
+            top: `${dest.map_y}%`,
+            animationDelay: `${i * 0.12}s`,
+          }}
+          title={dest.name}
+          aria-label={`Visit ${dest.name}`}
+        >
+          <span className="map-marker__icon">{dest.icon || '\u2726'}</span>
+          <span className="map-marker__label">{dest.name}</span>
+        </button>
+      ))}
 
       {!audioFailed && <div className="audio-control">
         <button
