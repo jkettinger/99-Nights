@@ -5,7 +5,7 @@ export default function Home() {
   const [visible, setVisible] = useState(false)
   const [shrunk, setShrunk] = useState(false)
   const [muted, setMuted] = useState(true)
-  const [volume, setVolume] = useState(0.4)
+  const [volume, setVolume] = useState(0.75)
   const [audioFailed, setAudioFailed] = useState(false)
   const audioRef = useRef<HTMLAudioElement>(null)
   const warriorRef = useRef<HTMLDivElement>(null)

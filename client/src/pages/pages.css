@@ -58,17 +58,19 @@
   display: block;
   height: 100%;
   width: auto;
-  transition: opacity 0.3s ease;
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  transition: opacity 0.6s ease;
 }
 
 .warrior-img--hidden {
   opacity: 0;
-  position: absolute;
-  inset: 0;
 }
 
 .gamepiece-img {
-  animation: gamepiece-appear 0.4s ease-out forwards;
+  animation: gamepiece-appear 0.6s ease-out forwards;
 }
 
 .warrior--visible {
@@ -86,30 +88,6 @@
   filter: drop-shadow(0 0 8px rgba(168, 28, 42, 0.5)) drop-shadow(0 0 20px rgba(168, 28, 42, 0.2));
   animation: none;
   opacity: 1;
-}
-
-/* Chrome base — appears after shrink */
-.warrior--visible::after {
-  content: '';
-  position: absolute;
-  bottom: -10px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 85px;
-  height: 16px;
-  border-radius: 50%;
-  background: linear-gradient(180deg, #e8e8e8, #a0a0a0, #c8c8c8, #909090);
-  box-shadow:
-    0 -1px 2px rgba(255, 255, 255, 0.3),
-    0 2px 4px rgba(0, 0, 0, 0.5);
-  opacity: 0;
-  animation: base-appear 0.4s ease-out 2.9s forwards;
-}
-
-/* Keep chrome base visible after swap */
-.warrior--shrunk::after {
-  opacity: 1;
-  animation: none;
 }
 
 @keyframes warrior-fade-in {
@@ -132,14 +110,9 @@
   }
 }
 
-@keyframes base-appear {
-  from { opacity: 0; transform: translateX(-50%) scale(0.6); }
-  to   { opacity: 1; transform: translateX(-50%) scale(1); }
-}
-
 @keyframes gamepiece-appear {
-  from { opacity: 0; transform: scale(0.7); }
-  to   { opacity: 1; transform: scale(1); }
+  from { opacity: 0; }
+  to   { opacity: 1; }
 }
 
 /* Audio control — bottom-right */
