@@ -1,4 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
+import { useNavigate, useSearchParams } from 'react-router-dom'
+import { getPathToDestination } from '../data/roadPaths'
+import WaypointEditor from '../components/WaypointEditor'
 import './pages.css'
 
 interface Destination {
@@ -18,13 +21,21 @@ export default function Home() {
   const [volume, setVolume] = useState(0.75)
   const [audioFailed, setAudioFailed] = useState(false)
   const [destinations, setDestinations] = useState<Destination[]>([])
+  const [avatarPos, setAvatarPos] = useState({ x: 52, y: 83 })
+  const [traveling, setTraveling] = useState(false)
   const audioRef = useRef<HTMLAudioElement>(null)
   const warriorRef = useRef<HTMLDivElement>(null)
+  const travelTimeout = useRef<number>(undefined)
+  const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
+  const debug = searchParams.get('debug') === 'true'
 
   useEffect(() => {
     const timer = setTimeout(() => setVisible(true), 5500)
     return () => clearTimeout(timer)
   }, [])
+
+  useEffect(() => () => { clearTimeout(travelTimeout.current) }, [])
 
   useEffect(() => {
     fetch('/api/destinations')
@@ -92,48 +103,88 @@ export default function Home() {
     }
   }
 
+  function handleMarkerClick(dest: Destination) {
+    if (traveling) return
+    setTraveling(true)
+    const waypoints = getPathToDestination(dest.slug, dest.map_x, dest.map_y)
+    const SPEED = 40 // ms per unit of distance — tune for feel
+    let step = 0
+
+    function nextStep() {
+      if (step >= waypoints.length) {
+        navigate(`/destination/${dest.slug}`)
+        return
+      }
+      const wp = waypoints[step]!
+      const prev = step > 0 ? waypoints[step - 1]! : [avatarPos.x, avatarPos.y] as const
+      const dx = wp[0] - prev[0]
+      const dy = wp[1] - prev[1]
+      const dist = Math.sqrt(dx * dx + dy * dy)
+      const delay = Math.max(50, Math.round(dist * SPEED))
+      if (warriorRef.current) {
+        warriorRef.current.style.setProperty('--step-dur', `${delay}ms`)
+      }
+      setAvatarPos({ x: wp[0], y: wp[1] })
+      step++
+      travelTimeout.current = window.setTimeout(nextStep, delay)
+    }
+    nextStep()
+  }
+
   return (
-    <div className="page-center home-page">
+    <div className="home-page">
       <audio ref={audioRef} src="/audio/echos.mp3" loop autoPlay
         onError={() => setAudioFailed(true)} />
 
-      <div className="name-card">
-        <h2>Jim Kettinger</h2>
-      </div>
-      <div
-        ref={warriorRef}
-        className={`warrior${visible ? ' warrior--visible' : ''}${shrunk ? ' warrior--shrunk' : ''}`}
-      >
-        <img
-          src="/images/warrior-flipped.png"
-          alt="Warrior avatar"
-          className={`warrior-img${shrunk ? ' warrior-img--hidden' : ''}`}
-        />
-        {shrunk && (
-          <img
-            src="/images/gamepiece.png"
-            alt="Game piece avatar"
-            className="warrior-img gamepiece-img"
-          />
-        )}
-      </div>
+      <div className="map-container">
+        <img src="/images/map.jpg" alt="Fantasy map" className="map-image" />
+        <div className="map-overlay" />
 
-      {shrunk && destinations.map((dest, i) => (
-        <button
-          key={dest.id}
-          className="map-marker"
-          style={{
-            left: `${dest.map_x}%`,
-            top: `${dest.map_y}%`,
-            animationDelay: `${i * 0.12}s`,
-          }}
-          title={dest.name}
-          aria-label={`Visit ${dest.name}`}
+        <div className="name-card">
+          <h2>Jim Kettinger</h2>
+        </div>
+
+        <div
+          ref={warriorRef}
+          className={`warrior${visible ? ' warrior--visible' : ''}${shrunk ? ' warrior--shrunk' : ''}`}
+          style={shrunk ? { left: `${avatarPos.x}%`, top: `${avatarPos.y}%` } : undefined}
         >
-          <span className="map-marker__icon">{dest.icon || '\u2726'}</span>
-          <span className="map-marker__label">{dest.name}</span>
-        </button>
-      ))}
+          <img
+            src="/images/warrior-flipped.png"
+            alt="Warrior avatar"
+            className={`warrior-img${shrunk ? ' warrior-img--hidden' : ''}`}
+          />
+          {shrunk && (
+            <img
+              src="/images/gamepiece.png"
+              alt="Game piece avatar"
+              className="warrior-img gamepiece-img"
+            />
+          )}
+        </div>
+
+        {shrunk && destinations.map((dest, i) => (
+          <button
+            type="button"
+            key={dest.id}
+            className={`map-marker${traveling ? ' map-marker--traveling' : ''}`}
+            style={{
+              left: `${dest.map_x}%`,
+              top: `${dest.map_y}%`,
+              animationDelay: `${i * 0.12}s`,
+            }}
+            title={dest.name}
+            aria-label={`Visit ${dest.name}`}
+            onClick={() => handleMarkerClick(dest)}
+            disabled={traveling}
+          >
+            <span className="map-marker__icon">{dest.icon || '\u2726'}</span>
+            <span className="map-marker__label">{dest.name}</span>
+          </button>
+        ))}
+
+        {debug && <WaypointEditor />}
+      </div>
 
       {!audioFailed && <div className="audio-control">
         <button
