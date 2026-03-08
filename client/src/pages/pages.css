@@ -47,7 +47,7 @@
   position: absolute;
   left: 50%;
   top: 50%;
-  transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%) scaleX(-1);
   z-index: 1;
   pointer-events: none;
   height: 55vh;
@@ -99,13 +99,13 @@
   from {
     height: 55vh;
     top: 50%;
-    transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%) scaleX(-1);
     filter: none;
   }
   to {
     height: 95px;
     top: 82%;
-    transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%) scaleX(-1);
     filter: drop-shadow(0 0 8px rgba(168, 28, 42, 0.5)) drop-shadow(0 0 20px rgba(168, 28, 42, 0.2));
   }
 }
