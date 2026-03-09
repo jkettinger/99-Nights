@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { getPathToDestination } from '../data/roadPaths'
+import type { Point } from '../data/roadPaths'
 import { ICON_MAP } from '../components/iconMap'
 import WaypointEditor from '../components/WaypointEditor'
 import './pages.css'
@@ -28,6 +29,7 @@ export default function Home() {
   })
   const [audioFailed, setAudioFailed] = useState(false)
   const [destinations, setDestinations] = useState<Destination[]>([])
+  const [dynamicWaypoints, setDynamicWaypoints] = useState<Record<string, Point[]> | null>(null)
   const [avatarPos, setAvatarPos] = useState({ x: 52, y: 83 })
   const [traveling, setTraveling] = useState(false)
   const audioRef = useRef<HTMLAudioElement>(null)
@@ -49,6 +51,23 @@ export default function Home() {
     fetch('/api/destinations')
       .then((res) => res.ok ? res.json() : [])
       .then((data) => setDestinations(Array.isArray(data) ? data : []))
+      .catch(() => {})
+  }, [])
+
+  useEffect(() => {
+    fetch('/api/road-waypoints')
+      .then(res => res.ok ? res.json() : null)
+      .then(data => {
+        if (data && typeof data === 'object') {
+          const parsed: Record<string, Point[]> = {}
+          for (const [slug, pts] of Object.entries(data)) {
+            if (Array.isArray(pts) && pts.length > 0) {
+              parsed[slug] = (pts as number[][]).map(p => [p[0], p[1]] as Point)
+            }
+          }
+          if (Object.keys(parsed).length > 0) setDynamicWaypoints(parsed)
+        }
+      })
       .catch(() => {})
   }, [])
 
@@ -130,7 +149,20 @@ export default function Home() {
   function handleMarkerClick(dest: Destination) {
     if (traveling) return
     setTraveling(true)
-    const waypoints = getPathToDestination(dest.slug, dest.map_x, dest.map_y)
+
+    // Use dynamic waypoints from API if available, fall back to hardcoded data
+    let waypoints: Point[]
+    if (dynamicWaypoints) {
+      const startToTown = dynamicWaypoints['__start_to_town__']
+      const spoke = dynamicWaypoints[dest.slug]
+      if (startToTown && spoke) {
+        waypoints = [...startToTown, ...spoke]
+      } else {
+        waypoints = getPathToDestination(dest.slug, dest.map_x, dest.map_y)
+      }
+    } else {
+      waypoints = getPathToDestination(dest.slug, dest.map_x, dest.map_y)
+    }
     const SPEED = 40 // ms per unit of distance — tune for feel
     let step = 0
 

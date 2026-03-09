@@ -1,5 +1,6 @@
 import { useState, useEffect, FormEvent } from 'react'
 import IconPicker from '../components/IconPicker'
+import AdminWaypointEditor from '../components/AdminWaypointEditor'
 import { ICON_MAP } from '../components/iconMap'
 import './pages.css'
 
@@ -296,6 +297,12 @@ export default function Admin() {
             </div>
           )}
         </section>
+
+        <AdminWaypointEditor
+          destinations={destinations}
+          authHeaders={authHeaders}
+          onMessage={(text, type) => setMessage({ text, type })}
+        />
       </div>
     </div>
   )

@@ -1138,3 +1138,282 @@
     transform: translateY(0);
   }
 }
+
+/* ── Admin Waypoint Editor ── */
+.admin-section--wide {
+  max-width: none;
+}
+
+.wp-editor {
+  display: flex;
+  gap: 1rem;
+  min-height: 400px;
+}
+
+.wp-sidebar {
+  flex: 0 0 180px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.wp-sidebar__routes {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.wp-route-btn {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-left: 3px solid var(--route-color, #888);
+  border-radius: 3px;
+  padding: 6px 8px;
+  font-family: var(--font-body);
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.6);
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.wp-route-btn:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+}
+
+.wp-route-btn--active {
+  background: rgba(255, 255, 255, 0.12);
+  color: #fff;
+  border-left-width: 4px;
+}
+
+.wp-route-btn--active .wp-route-btn__name {
+  font-weight: 600;
+}
+
+.wp-route-btn--dirty .wp-route-btn__name::after {
+  content: ' \2022';
+  color: var(--color-accent);
+}
+
+.wp-route-btn__name {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.wp-route-btn__count {
+  font-family: monospace;
+  font-size: 0.65rem;
+  opacity: 0.5;
+  flex-shrink: 0;
+}
+
+.wp-sidebar__actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.wp-save-btn {
+  padding: 0.5rem 0.75rem;
+  background: var(--color-accent);
+  color: #E8E0D6;
+  border: none;
+  border-radius: 4px;
+  font-family: var(--font-title);
+  font-size: 0.8rem;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  transition: background 0.25s ease, opacity 0.25s ease;
+}
+
+.wp-save-btn:hover:not(:disabled) {
+  background: #C62333;
+}
+
+.wp-save-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.wp-save-all-btn {
+  font-size: 0.75rem !important;
+  padding: 0.4rem 0.6rem !important;
+}
+
+.wp-sidebar__help {
+  font-size: 0.7rem;
+  color: rgba(143, 163, 177, 0.4);
+  line-height: 1.5;
+  padding-top: 0.5rem;
+  border-top: 1px solid rgba(143, 163, 177, 0.1);
+}
+
+.wp-sidebar__help strong {
+  color: rgba(143, 163, 177, 0.6);
+}
+
+/* Map canvas */
+.wp-canvas {
+  flex: 1;
+  min-width: 0;
+}
+
+.wp-map-wrap {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 2816 / 1536;
+  border-radius: 4px;
+  overflow: hidden;
+  cursor: crosshair;
+  border: 1px solid rgba(143, 163, 177, 0.15);
+}
+
+.wp-map-img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  user-select: none;
+}
+
+.wp-map-dim {
+  position: absolute;
+  inset: 0;
+  background: rgba(26, 30, 37, 0.35);
+  pointer-events: none;
+}
+
+/* Lines */
+.wp-lines {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.wp-lines--active {
+  z-index: 2;
+}
+
+/* Dots */
+.wp-dot {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background: var(--dot-color, #fff);
+  box-shadow: 0 0 4px var(--dot-color, #fff);
+}
+
+.wp-dot--dim {
+  width: 4px;
+  height: 4px;
+  opacity: 0.3;
+  pointer-events: none;
+}
+
+.wp-dot--editable {
+  width: 10px;
+  height: 10px;
+  cursor: grab;
+  z-index: 3;
+  transition: transform 0.1s ease;
+}
+
+.wp-dot--editable:hover {
+  transform: translate(-50%, -50%) scale(1.4);
+}
+
+.wp-dot--dragging {
+  cursor: grabbing;
+  transform: translate(-50%, -50%) scale(1.6) !important;
+  box-shadow: 0 0 10px var(--dot-color, #fff), 0 0 20px var(--dot-color, #fff);
+}
+
+.wp-dot__label {
+  position: absolute;
+  left: 14px;
+  top: -2px;
+  white-space: nowrap;
+  font-family: monospace;
+  font-size: 9px;
+  color: var(--dot-color, #fff);
+  text-shadow: 0 0 3px rgba(0, 0, 0, 0.9), 0 0 6px rgba(0, 0, 0, 0.7);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.15s ease;
+}
+
+.wp-dot--editable:hover .wp-dot__label,
+.wp-dot--dragging .wp-dot__label {
+  opacity: 1;
+}
+
+/* Destination reference markers */
+.wp-marker {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: rgba(232, 224, 214, 0.5);
+  border: 1px solid rgba(232, 224, 214, 0.3);
+  pointer-events: none;
+  z-index: 1;
+}
+
+.wp-marker--town {
+  width: 10px;
+  height: 10px;
+  background: rgba(255, 255, 255, 0.7);
+  border-color: rgba(255, 255, 255, 0.5);
+}
+
+.wp-marker__label {
+  position: absolute;
+  left: 12px;
+  top: -4px;
+  white-space: nowrap;
+  font-family: var(--font-title);
+  font-size: 8px;
+  letter-spacing: 0.06em;
+  color: rgba(232, 224, 214, 0.6);
+  text-shadow: 0 0 4px rgba(0, 0, 0, 0.9);
+}
+
+/* Responsive */
+@media (max-width: 700px) {
+  .wp-editor {
+    flex-direction: column;
+  }
+
+  .wp-sidebar {
+    flex: none;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .wp-sidebar__routes {
+    flex-direction: row;
+    flex-wrap: wrap;
+    flex: 1;
+  }
+
+  .wp-sidebar__actions {
+    flex-direction: row;
+  }
+
+  .wp-sidebar__help {
+    display: none;
+  }
+}
