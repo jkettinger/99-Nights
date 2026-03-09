@@ -18,7 +18,6 @@ interface Destination {
 
 export default function Home() {
   const hasPlayed = sessionStorage.getItem('intro-played') === 'true'
-  const hasPlayedRef = useRef(hasPlayed)
   const [visible, setVisible] = useState(hasPlayed)
   const [shrunk, setShrunk] = useState(hasPlayed)
   const [muted, setMuted] = useState(() => sessionStorage.getItem('audio-muted') === 'true')
@@ -86,58 +85,29 @@ export default function Home() {
     return () => el.removeEventListener('animationend', onEnd)
   }, [hasPlayed])
 
-  // Mobile: cinematic pan to gamepiece (first visit) or instant scroll (return)
+  // Mobile: center viewport on gamepiece
   useEffect(() => {
     if (!shrunk || window.innerWidth > 768) return
     const container = document.querySelector('.home-page') as HTMLElement
     const mapEl = container?.querySelector('.map-container') as HTMLElement
     if (!container || !mapEl) return
 
-    // Gamepiece position: center of viewport on [50%, 84%]
-    const endX = mapEl.scrollWidth * 0.5 - window.innerWidth / 2
-    const endY = mapEl.scrollHeight * 0.84 - window.innerHeight / 2
-
-    if (hasPlayedRef.current) {
-      // Returning visitor — instant scroll, no ceremony
-      container.scrollTo(endX, endY)
-      return
-    }
-
-    // First visit — cinematic sweep from top-center to gamepiece
-    const fromX = mapEl.scrollWidth * 0.3 - window.innerWidth / 2
-    const fromY = mapEl.scrollHeight * 0.1
-    container.scrollTo(fromX, fromY)
-
-    // Smooth rAF-driven pan with cubic ease-in-out
-    const duration = 2000
-    const delay = 800
-    let rafId = 0
-
-    const timeoutId = setTimeout(() => {
-      const start = performance.now()
-
-      function animate(now: number) {
-        const elapsed = now - start
-        const progress = Math.min(elapsed / duration, 1)
-        const ease = progress < 0.5
-          ? 4 * progress * progress * progress
-          : 1 - Math.pow(-2 * progress + 2, 3) / 2
-
-        container.scrollTo(
-          fromX + (endX - fromX) * ease,
-          fromY + (endY - fromY) * ease,
-        )
-
-        if (progress < 1) rafId = requestAnimationFrame(animate)
-      }
-      rafId = requestAnimationFrame(animate)
-    }, delay)
-
-    return () => {
-      clearTimeout(timeoutId)
-      cancelAnimationFrame(rafId)
-    }
+    const targetX = mapEl.scrollWidth * 0.5 - window.innerWidth / 2
+    const targetY = mapEl.scrollHeight * 0.84 - window.innerHeight / 2
+    container.scrollTo(targetX, targetY)
   }, [shrunk])
+
+  // Mobile: follow avatar during travel
+  useEffect(() => {
+    if (window.innerWidth > 768 || !traveling) return
+    const container = document.querySelector('.home-page') as HTMLElement
+    const mapEl = container?.querySelector('.map-container') as HTMLElement
+    if (!container || !mapEl) return
+
+    const targetX = mapEl.scrollWidth * (avatarPos.x / 100) - window.innerWidth / 2
+    const targetY = mapEl.scrollHeight * (avatarPos.y / 100) - window.innerHeight / 2
+    container.scrollTo({ left: targetX, top: targetY, behavior: 'smooth' })
+  }, [avatarPos, traveling])
 
   useEffect(() => {
     const audio = audioRef.current
@@ -210,7 +180,7 @@ export default function Home() {
     const waypoints: Point[] = spoke
       ? [...start, ...spoke]
       : [...start, [dest.map_x, dest.map_y]]
-    const SPEED = 40 // ms per unit of distance — tune for feel
+    const SPEED = window.innerWidth <= 768 ? 80 : 40 // slower on mobile for the journey
     let step = 0
 
     function nextStep() {
