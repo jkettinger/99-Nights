@@ -340,7 +340,7 @@ export default function AdminWaypointEditor({ destinations, authHeaders, onMessa
           ))}
 
           {/* Gamepiece start position */}
-          <div className="wp-marker wp-marker--gamepiece" style={{ left: '52%', top: '83%' }}>
+          <div className="wp-marker wp-marker--gamepiece" style={{ left: '50%', top: '84%' }}>
             <img src="/images/gamepiece.png" alt="Start" className="wp-marker__gamepiece-img" />
             <span className="wp-marker__label">START</span>
           </div>

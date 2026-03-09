@@ -176,8 +176,8 @@
 /* Warrior after shrink — lock final position and remove scaleX flip for game piece */
 .warrior--shrunk {
   height: 8%;
-  top: 83%;
-  left: 52%;
+  top: 84%;
+  left: 50%;
   transform: translate(-50%, -50%);
   filter: drop-shadow(0 0 8px rgba(168, 28, 42, 0.5)) drop-shadow(0 0 20px rgba(168, 28, 42, 0.2));
   animation: none;
@@ -200,8 +200,8 @@
   }
   to {
     height: 8%;
-    left: 52%;
-    top: 83%;
+    left: 50%;
+    top: 84%;
     transform: translate(-50%, -50%);
     filter: drop-shadow(0 0 8px rgba(168, 28, 42, 0.5)) drop-shadow(0 0 20px rgba(168, 28, 42, 0.2));
   }

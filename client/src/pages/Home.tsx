@@ -30,7 +30,7 @@ export default function Home() {
   const [audioFailed, setAudioFailed] = useState(false)
   const [destinations, setDestinations] = useState<Destination[]>([])
   const [dynamicWaypoints, setDynamicWaypoints] = useState<Record<string, Point[]> | null>(null)
-  const [avatarPos, setAvatarPos] = useState({ x: 52, y: 83 })
+  const [avatarPos, setAvatarPos] = useState({ x: 50, y: 84 })
   const [traveling, setTraveling] = useState(false)
   const audioRef = useRef<HTMLAudioElement>(null)
   const warriorRef = useRef<HTMLDivElement>(null)

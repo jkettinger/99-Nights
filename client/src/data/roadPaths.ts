@@ -5,7 +5,7 @@ export const TOWN: Point = [61, 67]
 
 // South road: gamepiece start position up to town
 export const startToTown: Point[] = [
-  [52, 83],
+  [50, 84],
   [53, 82],
   [54, 81],
   [55, 81],
