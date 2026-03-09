@@ -9,6 +9,7 @@ import migrateRoutes from './routes/migrate.js';
 import roadWaypointRoutes from './routes/roadWaypoints.js';
 import characterRoutes from './routes/characters.js';
 import uploadRoutes from './routes/upload.js';
+import messageRoutes from './routes/messages.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const isProduction = process.env.NODE_ENV === 'production';
@@ -37,6 +38,7 @@ app.use('/api/destinations', destinationRoutes);
 app.use('/api/road-waypoints', roadWaypointRoutes);
 app.use('/api/characters', characterRoutes);
 app.use('/api/upload', uploadRoutes);
+app.use('/api/messages', messageRoutes);
 app.use('/api', migrateRoutes);
 
 // In production, serve the built React app

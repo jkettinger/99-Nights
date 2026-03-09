@@ -4,6 +4,7 @@ import Login from './pages/Login'
 import Admin from './pages/Admin'
 import AdminWaypoints from './pages/AdminWaypoints'
 import AdminCharacters from './pages/AdminCharacters'
+import AdminMessages from './pages/AdminMessages'
 import Destination from './pages/Destination'
 import ProtectedRoute from './components/ProtectedRoute'
 import FogOverlay from './components/FogOverlay'
@@ -41,6 +42,14 @@ function AppRoutes() {
           element={
             <ProtectedRoute>
               <AdminWaypoints />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/messages"
+          element={
+            <ProtectedRoute>
+              <AdminMessages />
             </ProtectedRoute>
           }
         />

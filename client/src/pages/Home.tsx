@@ -4,6 +4,7 @@ import { startToTown as hardcodedStartToTown, spokes as hardcodedSpokes } from '
 import type { Point } from '../data/roadPaths'
 import { ICON_MAP } from '../components/iconMap'
 import WaypointEditor from '../components/WaypointEditor'
+import ChatBox from '../components/ChatBox'
 import './pages.css'
 
 interface Destination {
@@ -220,6 +221,7 @@ export default function Home() {
 
         {debug && <WaypointEditor />}
       </div>
+      {shrunk && <ChatBox />}
     </div>
   )
 }
