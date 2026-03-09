@@ -1,6 +1,6 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import pool from './_db.js';
-import { verifyAuth } from './_auth.js';
+import pool from '../_db.js';
+import { verifyAuth } from '../_auth.js';
 import type { RowDataPacket, ResultSetHeader } from 'mysql2';
 
 interface MessageRow extends RowDataPacket {
