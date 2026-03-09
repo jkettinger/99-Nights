@@ -104,14 +104,39 @@ export default function Home() {
     }
 
     // First visit — cinematic sweep from top-center to gamepiece
-    const startX = mapEl.scrollWidth * 0.3 - window.innerWidth / 2
-    const startY = mapEl.scrollHeight * 0.1
-    container.scrollTo(startX, startY)
+    const fromX = mapEl.scrollWidth * 0.3 - window.innerWidth / 2
+    const fromY = mapEl.scrollHeight * 0.1
+    container.scrollTo(fromX, fromY)
 
-    const timer = setTimeout(() => {
-      container.scrollTo({ left: endX, top: endY, behavior: 'smooth' })
-    }, 600)
-    return () => clearTimeout(timer)
+    // Smooth rAF-driven pan with cubic ease-in-out
+    const duration = 2000
+    const delay = 800
+    let rafId = 0
+
+    const timeoutId = setTimeout(() => {
+      const start = performance.now()
+
+      function animate(now: number) {
+        const elapsed = now - start
+        const progress = Math.min(elapsed / duration, 1)
+        const ease = progress < 0.5
+          ? 4 * progress * progress * progress
+          : 1 - Math.pow(-2 * progress + 2, 3) / 2
+
+        container.scrollTo(
+          fromX + (endX - fromX) * ease,
+          fromY + (endY - fromY) * ease,
+        )
+
+        if (progress < 1) rafId = requestAnimationFrame(animate)
+      }
+      rafId = requestAnimationFrame(animate)
+    }, delay)
+
+    return () => {
+      clearTimeout(timeoutId)
+      cancelAnimationFrame(rafId)
+    }
   }, [shrunk])
 
   useEffect(() => {
