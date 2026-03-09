@@ -1,8 +1,9 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { startToTown as hardcodedStartToTown, spokes as hardcodedSpokes } from '../data/roadPaths'
 import type { Point } from '../data/roadPaths'
 import { ICON_MAP } from '../components/iconMap'
+import { useChat } from '../contexts/ChatContext'
 import WaypointEditor from '../components/WaypointEditor'
 import ChatBox from '../components/ChatBox'
 import './pages.css'
@@ -17,6 +18,43 @@ interface Destination {
   icon: string | null
 }
 
+const DESTINATION_MESSAGES: Record<string, string> = {
+  'the-hearth': "Ah, I can't wait to see the brood!",
+  'the-keep': 'To the Keep! Important business awaits.',
+  'the-arena': 'Time to test our mettle in the Arena!',
+  'the-library': 'Knowledge awaits in the ancient stacks...',
+  'the-tavern': 'Nothing like a cold mead after a long journey.',
+  'work': 'Duty calls at the forge.',
+}
+
+const AMBIENT_MESSAGES: [string, string][] = [
+  ['Guard', 'I used to be an adventurer like you, then I took an arrow to the knee.'],
+  ['Merchant', "Fresh sweetrolls! Get 'em while they're warm!"],
+  ['Bard', '\u266A Our hero, our hero, claims a warrior\'s heart... \u266A'],
+  ['Villager', 'Did you hear? Dragons have been spotted near the mountains.'],
+  ['Innkeeper', "Nothing like some fried dragon to lift a wanderer's spirit."],
+  ['Scout', "The roads aren't safe these days. Watch yourself, traveler."],
+  ['Blacksmith', "Steel's not cheap, but neither is your life."],
+  ['Elder', 'The ancient texts speak of one who would come...'],
+  ['Child', "Tag! You're it! ...oh wait, you're not playing."],
+  ['Fisherman', 'Caught a mudcrab the other day. Nasty creatures.'],
+  ['Alchemist', 'I could brew you a potion, but the last one turned a man into a newt.'],
+  ['Courier', "I've been looking for you. Got something I'm supposed to deliver."],
+  ['Stablehand', 'The horses are restless tonight. Something in the air.'],
+  ['Wizard', 'I tried to refactor reality once. Got a stack overflow.'],
+  ['Scribe', 'The logs are full of warnings. As usual, no one reads them.'],
+  ['Merchant', "Two copper for a health potion? In THIS economy?"],
+  ['Guard', 'Nothing to report. Which is exactly what worries me.'],
+  ['Bard', "They say the dev who built this realm never sleeps."],
+  ['Villager', 'My cousin saw a pixel out of place near the tavern. Terrifying.'],
+  ['Innkeeper', 'We serve ale, mead, and cold brew coffee. Adventurers need caffeine.'],
+  ['Elder', 'In my day, we deployed on Fridays and lived to tell the tale.'],
+  ['Child', 'When I grow up, I want to be a div with position: absolute!'],
+  ['Fisherman', "The network's been slow today. Must be the sea serpents."],
+  ['Scout', 'I found a hidden path behind the waterfall. It led to a 404.'],
+  ['Blacksmith', "I forged this blade from pure TypeScript. It's strictly typed."],
+]
+
 export default function Home() {
   const hasPlayed = sessionStorage.getItem('intro-played') === 'true'
   const [visible, setVisible] = useState(hasPlayed)
@@ -30,6 +68,9 @@ export default function Home() {
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
   const debug = searchParams.get('debug') === 'true'
+  const { messages, addMessage } = useChat()
+  const welcomeSentRef = useRef(false)
+  const ambientIndexRef = useRef(Math.floor(Math.random() * AMBIENT_MESSAGES.length))
 
   useEffect(() => {
     if (hasPlayed) return
@@ -104,8 +145,38 @@ export default function Home() {
     container.scrollTo({ left: targetX, top: targetY, behavior: 'smooth' })
   }, [avatarPos, traveling])
 
+  // Welcome message when avatar finishes loading
+  useEffect(() => {
+    if (!shrunk || welcomeSentRef.current) return
+    welcomeSentRef.current = true
+    addMessage('Jim', 'Greetings, adventurer! Welcome to the realm.')
+  }, [shrunk, addMessage])
+
+  // Ambient NPC messages — random interval, only while on the map
+  useEffect(() => {
+    if (!shrunk) return
+    function scheduleNext() {
+      const delay = 15000 + Math.random() * 10000 // 15-25s
+      return window.setTimeout(() => {
+        const [sender, text] = AMBIENT_MESSAGES[ambientIndexRef.current % AMBIENT_MESSAGES.length]!
+        ambientIndexRef.current++
+        addMessage(sender, text)
+        timerRef = scheduleNext()
+      }, delay)
+    }
+    let timerRef = scheduleNext()
+    return () => clearTimeout(timerRef)
+  }, [shrunk, addMessage])
+
+  // Destination click chat message
+  const addDestinationMessage = useCallback((slug: string) => {
+    const msg = DESTINATION_MESSAGES[slug] || 'Onward, to adventure!'
+    addMessage('Jim', msg)
+  }, [addMessage])
+
   function handleMarkerClick(dest: Destination) {
     if (traveling) return
+    addDestinationMessage(dest.slug)
     setTraveling(true)
 
     // Per-segment fallback: each piece independently uses API data or hardcoded

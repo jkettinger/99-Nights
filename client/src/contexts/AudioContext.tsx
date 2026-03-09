@@ -38,6 +38,8 @@ export function AudioProvider({ children }: { children: ReactNode }) {
   const positionsRef = useRef<Map<string, number>>(new Map())
   const currentTrackRef = useRef<string>(MAP_TRACK)
   const fadeRef = useRef<number>(undefined)
+  const volumeRef = useRef(volume)
+  volumeRef.current = volume
 
   // Start playback on mount — audio always plays, volume controls audibility
   useEffect(() => {
@@ -94,15 +96,16 @@ export function AudioProvider({ children }: { children: ReactNode }) {
     // Fade out, then swap
     fadeTo(0, () => {
       currentTrackRef.current = newTrack
+      setAudioFailed(false)
       audio.src = newTrack
       audio.currentTime = positionsRef.current.get(newTrack) || 0
       audio.play().catch(() => {})
       // Fade in to user's volume (respect mute state)
       if (!audio.muted) {
-        fadeTo(volume)
+        fadeTo(volumeRef.current)
       }
     })
-  }, [fadeTo, volume])
+  }, [fadeTo])
 
   // Sync volume to element — fade out when leaving the map (and no destination track), restore when returning
   useEffect(() => {
@@ -156,7 +159,7 @@ export function AudioProvider({ children }: { children: ReactNode }) {
 
   return (
     <AudioCtx.Provider value={{ muted, volume, audioFailed, toggleMute, handleVolumeChange, setTrack }}>
-      <audio ref={audioRef} src={MAP_TRACK} loop onError={() => setAudioFailed(true)} />
+      <audio ref={audioRef} src={MAP_TRACK} loop onCanPlayThrough={() => setAudioFailed(false)} onError={() => setAudioFailed(true)} />
       {children}
     </AudioCtx.Provider>
   )

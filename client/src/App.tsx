@@ -9,6 +9,7 @@ import Destination from './pages/Destination'
 import ProtectedRoute from './components/ProtectedRoute'
 import FogOverlay from './components/FogOverlay'
 import { AudioProvider } from './contexts/AudioContext'
+import { ChatProvider } from './contexts/ChatContext'
 import AudioControl from './components/AudioControl'
 
 function AppRoutes() {
@@ -62,7 +63,9 @@ export default function App() {
   return (
     <BrowserRouter>
       <AudioProvider>
-        <AppRoutes />
+        <ChatProvider>
+          <AppRoutes />
+        </ChatProvider>
       </AudioProvider>
     </BrowserRouter>
   )

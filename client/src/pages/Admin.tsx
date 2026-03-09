@@ -294,7 +294,7 @@ export default function Admin() {
                           return entry ? <entry.component size={16} /> : '—'
                         })()}
                       </td>
-                      <td className="admin-table__slug">{dest.audio || '—'}</td>
+                      <td className="admin-table__audio">{dest.audio || '—'}</td>
                       <td className="admin-table__actions">
                         <button className="admin-btn--edit" onClick={() => startEdit(dest)}>Edit</button>
                         {confirmDeleteId === dest.id ? (
@@ -331,6 +331,16 @@ export default function Admin() {
           </p>
           <Link to="/admin/waypoints" className="admin-btn--edit" style={{ display: 'inline-block', textDecoration: 'none' }}>
             Open Waypoint Editor
+          </Link>
+        </section>
+
+        <section className="admin-section">
+          <h2>Messages</h2>
+          <p style={{ marginBottom: '1rem', color: 'rgba(143, 163, 177, 0.6)', fontSize: '0.9rem' }}>
+            View and manage messages received from the contact chat box.
+          </p>
+          <Link to="/admin/messages" className="admin-btn--edit" style={{ display: 'inline-block', textDecoration: 'none' }}>
+            Open Messages
           </Link>
         </section>
       </div>

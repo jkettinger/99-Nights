@@ -1,135 +1,140 @@
-import { useState, useRef, FormEvent } from 'react'
+import { useState, useRef, useEffect, FormEvent } from 'react'
+import { useChat } from '../contexts/ChatContext'
 
 const SPAM_THRESHOLD_MS = 3000
 
 export default function ChatBox() {
-  const [open, setOpen] = useState(false)
+  const { messages, addMessage } = useChat()
+  const [minimized, setMinimized] = useState(false)
   const [name, setName] = useState('')
-  const [message, setMessage] = useState('')
-  const [status, setStatus] = useState<'idle' | 'sending' | 'sent' | 'error'>('idle')
+  const [text, setText] = useState('')
+  const [sending, setSending] = useState(false)
   const [errorText, setErrorText] = useState('')
   const honeypotRef = useRef('')
   const mountTimeRef = useRef(Date.now())
+  const logRef = useRef<HTMLDivElement>(null)
+
+  // Auto-scroll to bottom when new messages arrive
+  useEffect(() => {
+    const el = logRef.current
+    if (el) el.scrollTop = el.scrollHeight
+  }, [messages])
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault()
-    if (status === 'sending') return
+    if (sending || !name.trim() || !text.trim()) return
 
-    // Honeypot: bots fill hidden fields — silently fake success
+    const trimmedName = name.trim()
+    const trimmedText = text.trim()
+
+    // Show user message in chat immediately
+    addMessage('Traveler', trimmedText)
+    setText('')
+    setErrorText('')
+
+    // Honeypot: silently fake success
     if (honeypotRef.current) {
-      setStatus('sent')
-      setName('')
-      setMessage('')
+      addMessage('Jim', 'Your raven has been sent. I\'ll respond soon!')
       return
     }
 
     // Timestamp anti-spam: too fast = bot
     if (Date.now() - mountTimeRef.current < SPAM_THRESHOLD_MS) {
-      setStatus('sent')
-      setName('')
-      setMessage('')
+      addMessage('Jim', 'Your raven has been sent. I\'ll respond soon!')
       return
     }
 
-    setStatus('sending')
-    setErrorText('')
+    setSending(true)
 
     try {
       const res = await fetch('/api/messages', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, message, website: honeypotRef.current }),
+        body: JSON.stringify({ name: trimmedName, message: trimmedText, website: honeypotRef.current }),
       })
 
       if (res.status === 429) {
-        setStatus('error')
         setErrorText('Easy there, adventurer. Try again in a moment.')
         return
       }
 
       if (!res.ok) {
-        setStatus('error')
         setErrorText('The raven failed to deliver. Try again.')
         return
       }
 
-      setStatus('sent')
-      setName('')
-      setMessage('')
+      addMessage('Jim', 'Your raven has been sent. I\'ll respond soon!')
     } catch {
-      setStatus('error')
       setErrorText('No connection to the realm. Try again.')
+    } finally {
+      setSending(false)
     }
   }
 
-  function handleNewMessage() {
-    setStatus('idle')
-    setErrorText('')
-  }
-
   return (
-    <div className={`chatbox${open ? ' chatbox--open' : ''}`}>
-      {!open ? (
-        <button type="button" className="chatbox__toggle" onClick={() => setOpen(true)}>
-          <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor">
-            <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H5.17L4 17.17V4h16v12z"/>
-          </svg>
-          <span>Message Me</span>
+    <div className={`chatbox${minimized ? ' chatbox--minimized' : ''}`}>
+      <div className="chatbox__header">
+        <span className="chatbox__channel">[General]</span>
+        <button
+          type="button"
+          className="chatbox__minimize"
+          onClick={() => setMinimized(!minimized)}
+          aria-label={minimized ? 'Expand chat' : 'Minimize chat'}
+        >
+          {minimized ? '+' : '\u2013'}
         </button>
-      ) : (
+      </div>
+
+      {!minimized && (
         <>
-          <div className="chatbox__header">
-            <span className="chatbox__channel">[General]</span>
-            <button type="button" className="chatbox__close" onClick={() => setOpen(false)} aria-label="Close chat">
-              &times;
-            </button>
+          <div className="chatbox__log" ref={logRef}>
+            {messages.length === 0 && (
+              <p className="chatbox__empty">The chat is quiet...</p>
+            )}
+            {messages.map((msg, i) => (
+              <div key={i} className="chatbox__msg">
+                <span className={`chatbox__sender${msg.sender === 'Jim' || msg.sender === 'Traveler' ? ' chatbox__sender--player' : ''}`}>
+                  [{msg.sender}]
+                </span>{' '}
+                <span className="chatbox__text">{msg.text}</span>
+              </div>
+            ))}
           </div>
 
-          <div className="chatbox__body">
-            {status === 'sent' ? (
-              <div className="chatbox__confirmation">
-                <p className="chatbox__sent-msg">Message sent! The raven flies.</p>
-                <button type="button" className="chatbox__again" onClick={handleNewMessage}>
-                  Send another
-                </button>
-              </div>
-            ) : (
-              <form onSubmit={handleSubmit} className="chatbox__form">
-                {/* Honeypot — invisible to humans */}
-                <input
-                  name="website"
-                  tabIndex={-1}
-                  autoComplete="off"
-                  style={{ position: 'absolute', left: '-9999px', height: 0, width: 0, overflow: 'hidden' }}
-                  onChange={(e) => { honeypotRef.current = e.target.value }}
-                />
-                <input
-                  type="text"
-                  className="chatbox__input"
-                  placeholder="Your name, traveler..."
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  required
-                  maxLength={100}
-                />
-                <textarea
-                  className="chatbox__textarea"
-                  placeholder="Type your message..."
-                  value={message}
-                  onChange={(e) => setMessage(e.target.value)}
-                  required
-                  maxLength={2000}
-                  rows={3}
-                />
-                {status === 'error' && (
-                  <p className="chatbox__error">{errorText}</p>
-                )}
-                <button type="submit" className="chatbox__send" disabled={status === 'sending'}>
-                  {status === 'sending' ? 'Sending...' : 'Send Raven'}
-                </button>
-              </form>
-            )}
-          </div>
+          <form onSubmit={handleSubmit} className="chatbox__form">
+            {/* Honeypot — invisible to humans */}
+            <input
+              name="website"
+              tabIndex={-1}
+              autoComplete="off"
+              style={{ position: 'absolute', left: '-9999px', height: 0, width: 0, overflow: 'hidden' }}
+              onChange={(e) => { honeypotRef.current = e.target.value }}
+            />
+            <div className="chatbox__form-row">
+              <input
+                type="text"
+                className="chatbox__input chatbox__input--name"
+                placeholder="Name"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                required
+                maxLength={100}
+              />
+              <input
+                type="text"
+                className="chatbox__input chatbox__input--msg"
+                placeholder="Type a message..."
+                value={text}
+                onChange={(e) => setText(e.target.value)}
+                required
+                maxLength={2000}
+              />
+              <button type="submit" className="chatbox__send" disabled={sending}>
+                {sending ? '...' : 'Send'}
+              </button>
+            </div>
+            {errorText && <p className="chatbox__error">{errorText}</p>}
+          </form>
         </>
       )}
     </div>
