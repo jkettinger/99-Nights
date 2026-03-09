@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
 import type { Point } from '../data/roadPaths'
+import { startToTown, spokes } from '../data/roadPaths'
 
 interface Destination {
   id: number
@@ -49,23 +50,35 @@ export default function AdminWaypointEditor({ destinations, authHeaders, onMessa
   const overlayRef = useRef<HTMLDivElement>(null)
 
   // Build route list from destinations + start-to-town
+  // When API returns no data for a route, fall back to hardcoded paths and mark dirty
   const buildRoutes = useCallback((waypoints: Record<string, number[][]>) => {
+    const startPts = waypoints[START_SLUG]
+    const apiHasStart = Array.isArray(startPts) && startPts.length > 0
     const result: RouteData[] = [
       {
         slug: START_SLUG,
         label: 'Start \u2192 Town',
         color: ROUTE_COLORS[START_SLUG] || '#4a9eff',
-        points: (waypoints[START_SLUG] || []).map(p => [p[0], p[1]] as Point),
-        dirty: false,
+        points: apiHasStart
+          ? startPts.map(p => [p[0], p[1]] as Point)
+          : startToTown.map(p => [...p] as Point),
+        dirty: !apiHasStart && startToTown.length > 0,
       },
     ]
     destinations.forEach((dest, i) => {
+      const apiPts = waypoints[dest.slug]
+      const apiHas = Array.isArray(apiPts) && apiPts.length > 0
+      const hardcoded = spokes[dest.slug]
       result.push({
         slug: dest.slug,
         label: dest.name,
         color: colorForSlug(dest.slug, i + 1),
-        points: (waypoints[dest.slug] || []).map(p => [p[0], p[1]] as Point),
-        dirty: false,
+        points: apiHas
+          ? apiPts.map(p => [p[0], p[1]] as Point)
+          : hardcoded
+            ? hardcoded.map(p => [...p] as Point)
+            : [],
+        dirty: !apiHas && !!hardcoded && hardcoded.length > 0,
       })
     })
     return result
@@ -205,152 +218,150 @@ export default function AdminWaypointEditor({ destinations, authHeaders, onMessa
 
   if (loading) {
     return (
-      <section className="admin-section">
-        <h2>Road Waypoints</h2>
+      <div className="wp-loading">
         <p className="admin-empty">Loading waypoints...</p>
-      </section>
+      </div>
     )
   }
 
   return (
-    <section className="admin-section admin-section--wide">
-      <h2>Road Waypoints</h2>
+    <div className="wp-editor">
+      {/* Route selector panel */}
+      <div className="wp-sidebar">
+        <div className="wp-sidebar__routes">
+          {routes.map(route => (
+            <button
+              key={route.slug}
+              type="button"
+              className={`wp-route-btn${route.slug === selectedSlug ? ' wp-route-btn--active' : ''}${route.dirty ? ' wp-route-btn--dirty' : ''}`}
+              style={{ '--route-color': route.color } as React.CSSProperties}
+              onClick={() => setSelectedSlug(route.slug)}
+            >
+              <span className="wp-route-btn__name">{route.label}</span>
+              <span className="wp-route-btn__count">{route.points.length} pts</span>
+            </button>
+          ))}
+        </div>
 
-      <div className="wp-editor">
-        {/* Route selector panel */}
-        <div className="wp-sidebar">
-          <div className="wp-sidebar__routes">
-            {routes.map(route => (
-              <button
-                key={route.slug}
-                type="button"
-                className={`wp-route-btn${route.slug === selectedSlug ? ' wp-route-btn--active' : ''}${route.dirty ? ' wp-route-btn--dirty' : ''}`}
-                style={{ '--route-color': route.color } as React.CSSProperties}
-                onClick={() => setSelectedSlug(route.slug)}
-              >
-                <span className="wp-route-btn__name">{route.label}</span>
-                <span className="wp-route-btn__count">{route.points.length} pts</span>
-              </button>
-            ))}
-          </div>
-
-          <div className="wp-sidebar__actions">
+        <div className="wp-sidebar__actions">
+          <button
+            type="button"
+            className="wp-save-btn"
+            disabled={!selected?.dirty || saving}
+            onClick={handleSave}
+          >
+            {saving ? 'Saving...' : `Save ${selected?.label || ''}`}
+          </button>
+          {dirtyCount > 1 && (
             <button
               type="button"
-              className="admin-form__actions-btn wp-save-btn"
-              disabled={!selected?.dirty || saving}
-              onClick={handleSave}
+              className="admin-btn--secondary wp-save-all-btn"
+              disabled={saving}
+              onClick={handleSaveAll}
             >
-              {saving ? 'Saving...' : `Save ${selected?.label || ''}`}
+              Save All ({dirtyCount})
             </button>
-            {dirtyCount > 1 && (
-              <button
-                type="button"
-                className="admin-btn--secondary wp-save-all-btn"
-                disabled={saving}
-                onClick={handleSaveAll}
-              >
-                Save All ({dirtyCount})
-              </button>
-            )}
-          </div>
-
-          <div className="wp-sidebar__help">
-            <strong>Controls:</strong>
-            <br />Drag dots to reposition
-            <br />Right-click map to add point
-            <br />Double-click dot to remove
-          </div>
+          )}
         </div>
 
-        {/* Map canvas */}
-        <div className="wp-canvas">
-          <div
-            ref={overlayRef}
-            className="wp-map-wrap"
-            onPointerMove={handlePointerMove}
-            onPointerUp={handlePointerUp}
-            onContextMenu={addPoint}
-          >
-            <img src="/images/map.jpg" alt="Map" className="wp-map-img" draggable={false} />
-            <div className="wp-map-dim" />
-
-            {/* Dimmed routes for context */}
-            {routes.map(route =>
-              route.slug !== selectedSlug && route.points.length > 1 && (
-                <svg key={`line-${route.slug}`} className="wp-lines" viewBox="0 0 100 100" preserveAspectRatio="none">
-                  <polyline
-                    fill="none"
-                    stroke={route.color}
-                    strokeWidth="0.25"
-                    strokeOpacity="0.3"
-                    points={route.points.map(p => `${p[0]},${p[1]}`).join(' ')}
-                  />
-                </svg>
-              )
-            )}
-
-            {/* Dimmed dots for non-selected routes */}
-            {routes.map(route =>
-              route.slug !== selectedSlug &&
-              route.points.map((pt, i) => (
-                <div
-                  key={`${route.slug}-${i}`}
-                  className="wp-dot wp-dot--dim"
-                  style={{ left: `${pt[0]}%`, top: `${pt[1]}%`, '--dot-color': route.color } as React.CSSProperties}
-                />
-              ))
-            )}
-
-            {/* Selected route — connecting lines */}
-            {selected && selected.points.length > 1 && (
-              <svg className="wp-lines wp-lines--active" viewBox="0 0 100 100" preserveAspectRatio="none">
-                <polyline
-                  fill="none"
-                  stroke={selected.color}
-                  strokeWidth="0.35"
-                  strokeOpacity="0.7"
-                  points={selected.points.map(p => `${p[0]},${p[1]}`).join(' ')}
-                />
-              </svg>
-            )}
-
-            {/* Selected route — draggable dots */}
-            {selected && selected.points.map((pt, i) => (
-              <div
-                key={`sel-${i}`}
-                className={`wp-dot wp-dot--editable${dragIdx === i ? ' wp-dot--dragging' : ''}`}
-                style={{ left: `${pt[0]}%`, top: `${pt[1]}%`, '--dot-color': selected.color } as React.CSSProperties}
-                onPointerDown={e => handlePointerDown(i, e)}
-                onDoubleClick={() => removePoint(i)}
-              >
-                <span className="wp-dot__label">
-                  {i} ({pt[0]},{pt[1]})
-                </span>
-              </div>
-            ))}
-
-            {/* Town hub marker — always visible */}
-            <div
-              className="wp-marker wp-marker--town"
-              style={{ left: '61%', top: '67%' }}
-            >
-              <span className="wp-marker__label">TOWN</span>
-            </div>
-
-            {/* Destination markers for reference */}
-            {destinations.map(dest => (
-              <div
-                key={`marker-${dest.id}`}
-                className="wp-marker"
-                style={{ left: `${dest.map_x}%`, top: `${dest.map_y}%` }}
-              >
-                <span className="wp-marker__label">{dest.name}</span>
-              </div>
-            ))}
-          </div>
+        <div className="wp-sidebar__help">
+          <strong>Controls:</strong>
+          <br />Drag dots to reposition
+          <br />Right-click map to add point
+          <br />Double-click dot to remove
         </div>
       </div>
-    </section>
+
+      {/* Map canvas */}
+      <div className="wp-canvas">
+        <div
+          ref={overlayRef}
+          className="wp-map-wrap"
+          onPointerMove={handlePointerMove}
+          onPointerUp={handlePointerUp}
+          onContextMenu={addPoint}
+        >
+          <img src="/images/map.jpg" alt="Map" className="wp-map-img" draggable={false} />
+          <div className="wp-map-dim" />
+
+          {/* Dimmed routes for context */}
+          {routes.map(route =>
+            route.slug !== selectedSlug && route.points.length > 1 && (
+              <svg key={`line-${route.slug}`} className="wp-lines" viewBox="0 0 100 100" preserveAspectRatio="none">
+                <polyline
+                  fill="none"
+                  stroke={route.color}
+                  strokeWidth="0.25"
+                  strokeOpacity="0.3"
+                  points={route.points.map(p => `${p[0]},${p[1]}`).join(' ')}
+                />
+              </svg>
+            )
+          )}
+
+          {/* Dimmed dots for non-selected routes */}
+          {routes.map(route =>
+            route.slug !== selectedSlug &&
+            route.points.map((pt, i) => (
+              <div
+                key={`${route.slug}-${i}`}
+                className="wp-dot wp-dot--dim"
+                style={{ left: `${pt[0]}%`, top: `${pt[1]}%`, '--dot-color': route.color } as React.CSSProperties}
+              />
+            ))
+          )}
+
+          {/* Selected route — connecting lines */}
+          {selected && selected.points.length > 1 && (
+            <svg className="wp-lines wp-lines--active" viewBox="0 0 100 100" preserveAspectRatio="none">
+              <polyline
+                fill="none"
+                stroke={selected.color}
+                strokeWidth="0.35"
+                strokeOpacity="0.7"
+                points={selected.points.map(p => `${p[0]},${p[1]}`).join(' ')}
+              />
+            </svg>
+          )}
+
+          {/* Selected route — draggable dots */}
+          {selected && selected.points.map((pt, i) => (
+            <div
+              key={`sel-${i}`}
+              className={`wp-dot wp-dot--editable${dragIdx === i ? ' wp-dot--dragging' : ''}`}
+              style={{ left: `${pt[0]}%`, top: `${pt[1]}%`, '--dot-color': selected.color } as React.CSSProperties}
+              onPointerDown={e => handlePointerDown(i, e)}
+              onDoubleClick={() => removePoint(i)}
+            >
+              <span className="wp-dot__label">
+                {i} ({pt[0]},{pt[1]})
+              </span>
+            </div>
+          ))}
+
+          {/* Gamepiece start position */}
+          <div className="wp-marker wp-marker--gamepiece" style={{ left: '52%', top: '83%' }}>
+            <img src="/images/gamepiece.png" alt="Start" className="wp-marker__gamepiece-img" />
+            <span className="wp-marker__label">START</span>
+          </div>
+
+          {/* Town hub marker — always visible */}
+          <div className="wp-marker wp-marker--town" style={{ left: '61%', top: '67%' }}>
+            <span className="wp-marker__label">TOWN</span>
+          </div>
+
+          {/* Destination markers for reference */}
+          {destinations.map(dest => (
+            <div
+              key={`marker-${dest.id}`}
+              className="wp-marker"
+              style={{ left: `${dest.map_x}%`, top: `${dest.map_y}%` }}
+            >
+              <span className="wp-marker__label">{dest.name}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
   )
 }

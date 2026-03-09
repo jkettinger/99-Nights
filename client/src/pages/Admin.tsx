@@ -1,6 +1,6 @@
 import { useState, useEffect, FormEvent } from 'react'
+import { Link } from 'react-router-dom'
 import IconPicker from '../components/IconPicker'
-import AdminWaypointEditor from '../components/AdminWaypointEditor'
 import { ICON_MAP } from '../components/iconMap'
 import './pages.css'
 
@@ -298,11 +298,15 @@ export default function Admin() {
           )}
         </section>
 
-        <AdminWaypointEditor
-          destinations={destinations}
-          authHeaders={authHeaders}
-          onMessage={(text, type) => setMessage({ text, type })}
-        />
+        <section className="admin-section">
+          <h2>Road Waypoints</h2>
+          <p style={{ marginBottom: '1rem', color: 'rgba(143, 163, 177, 0.6)', fontSize: '0.9rem' }}>
+            Visual editor for tracing travel paths between destinations on the map.
+          </p>
+          <Link to="/admin/waypoints" className="admin-btn--edit" style={{ display: 'inline-block', textDecoration: 'none' }}>
+            Open Waypoint Editor
+          </Link>
+        </section>
       </div>
     </div>
   )

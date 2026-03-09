@@ -1139,15 +1139,62 @@
   }
 }
 
-/* ── Admin Waypoint Editor ── */
-.admin-section--wide {
-  max-width: none;
+/* ── Admin Waypoint Editor (full-screen page) ── */
+.wp-page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--color-bg);
+}
+
+.wp-page__header {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  padding: 0.75rem 1.5rem;
+  background: rgba(40, 46, 58, 0.8);
+  border-bottom: 1px solid rgba(143, 163, 177, 0.12);
+  flex-shrink: 0;
+}
+
+.wp-page__header h1 {
+  font-size: 1.1rem;
+  letter-spacing: 0.1em;
+  margin: 0;
+}
+
+.wp-page__back {
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  color: rgba(143, 163, 177, 0.6);
+  text-decoration: none;
+  transition: color 0.2s ease;
+  flex-shrink: 0;
+}
+
+.wp-page__back:hover {
+  color: var(--color-text);
+}
+
+.wp-page__message {
+  margin: 0;
+  font-size: 0.8rem;
+  padding: 0.4rem 0.8rem;
+}
+
+.wp-loading {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .wp-editor {
   display: flex;
   gap: 1rem;
-  min-height: 400px;
+  flex: 1;
+  min-height: 0;
+  padding: 0.75rem;
 }
 
 .wp-sidebar {
@@ -1376,6 +1423,21 @@
   height: 10px;
   background: rgba(255, 255, 255, 0.7);
   border-color: rgba(255, 255, 255, 0.5);
+}
+
+.wp-marker--gamepiece {
+  width: 20px;
+  height: 20px;
+  background: none;
+  border: none;
+  overflow: visible;
+}
+
+.wp-marker__gamepiece-img {
+  width: 20px;
+  height: 20px;
+  display: block;
+  filter: drop-shadow(0 0 4px rgba(168, 28, 42, 0.5));
 }
 
 .wp-marker__label {

@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom'
 import Home from './pages/Home'
 import Login from './pages/Login'
 import Admin from './pages/Admin'
+import AdminWaypoints from './pages/AdminWaypoints'
 import Destination from './pages/Destination'
 import ProtectedRoute from './components/ProtectedRoute'
 import FogOverlay from './components/FogOverlay'
@@ -20,6 +21,14 @@ function AppRoutes() {
           element={
             <ProtectedRoute>
               <Admin />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/waypoints"
+          element={
+            <ProtectedRoute>
+              <AdminWaypoints />
             </ProtectedRoute>
           }
         />
