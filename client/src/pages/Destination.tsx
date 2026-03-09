@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { ICON_MAP } from '../components/iconMap'
+import TheHearth from './TheHearth'
 import './pages.css'
 
 interface DestinationData {
@@ -16,7 +17,13 @@ export default function Destination() {
   const [destination, setDestination] = useState<DestinationData | null>(null)
   const [loading, setLoading] = useState(true)
 
+  const isHearth = slug === 'the-hearth'
+
   useEffect(() => {
+    if (isHearth) {
+      setLoading(false)
+      return
+    }
     fetch('/api/destinations')
       .then((res) => (res.ok ? res.json() : []))
       .then((data) => {
@@ -25,7 +32,11 @@ export default function Destination() {
       })
       .catch(() => {})
       .finally(() => setLoading(false))
-  }, [slug])
+  }, [slug, isHearth])
+
+  if (isHearth) {
+    return <TheHearth />
+  }
 
   if (loading) {
     return <div className="page-center"><p>Loading...</p></div>

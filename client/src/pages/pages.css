@@ -1171,6 +1171,401 @@
   }
 }
 
+/* ── Admin Character CRUD ── */
+.char-level {
+  color: var(--color-accent);
+  font-style: normal;
+  margin-left: 0.5rem;
+  font-size: 0.75rem;
+}
+
+.char-attrs {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.char-attrs__label {
+  font-size: 0.8rem;
+  color: rgba(143, 163, 177, 0.7);
+  letter-spacing: 0.04em;
+}
+
+.char-attrs__grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.5rem;
+}
+
+.char-attr {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.4rem 0.6rem;
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: 4px;
+  border: 1px solid rgba(143, 163, 177, 0.08);
+}
+
+.char-attr__name {
+  font-family: monospace;
+  font-size: 0.75rem;
+  color: rgba(143, 163, 177, 0.6);
+  width: 2.5em;
+}
+
+.star-rating {
+  display: flex;
+  gap: 1px;
+}
+
+.star-rating__star {
+  background: none;
+  border: none;
+  padding: 0;
+  font-size: 1rem;
+  cursor: pointer;
+  color: rgba(143, 163, 177, 0.3);
+  transition: color 0.15s ease, transform 0.15s ease;
+  line-height: 1;
+}
+
+.star-rating__star:hover {
+  transform: scale(1.2);
+}
+
+.star-rating__star--filled {
+  color: var(--color-accent);
+}
+
+@media (max-width: 600px) {
+  .char-attrs__grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* ── The Hearth — Trading Card Page ── */
+.hearth-page {
+  min-height: 100vh;
+  background: var(--color-bg);
+  padding: 2rem;
+}
+
+.hearth-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.hearth-back {
+  font-size: 1rem;
+  color: rgba(143, 163, 177, 0.5);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.hearth-back:hover {
+  color: var(--color-text);
+}
+
+.hearth-title {
+  font-size: 2.5rem;
+  letter-spacing: 0.15em;
+  margin: 0.75rem 0 0.25rem;
+  color: #E8E0D6;
+}
+
+.hearth-subtitle {
+  font-size: 1.1rem;
+  color: rgba(143, 163, 177, 0.5);
+  font-style: italic;
+  margin: 0;
+}
+
+/* Party Status Banner */
+.party-status {
+  max-width: 900px;
+  margin: 0 auto 2.5rem;
+  background: rgba(40, 46, 58, 0.7);
+  border: 1px solid rgba(143, 163, 177, 0.12);
+  border-top: 2px solid var(--color-accent);
+  border-radius: 4px;
+  padding: 0.75rem 1.25rem;
+}
+
+.party-status__label {
+  font-family: var(--font-title);
+  font-size: 0.85rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(143, 163, 177, 0.4);
+  display: block;
+  margin-bottom: 0.4rem;
+}
+
+.party-status__list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1.5rem;
+}
+
+.party-status__member {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 1rem;
+  color: var(--color-text);
+}
+
+.party-status__dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #4aff7f;
+  box-shadow: 0 0 4px rgba(74, 255, 127, 0.4);
+  flex-shrink: 0;
+}
+
+.party-status__text {
+  color: rgba(143, 163, 177, 0.6);
+  font-style: italic;
+  font-size: 1.05rem;
+}
+
+/* Trading Card Grid */
+.tc-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2rem;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+/* Individual Trading Card */
+.tc-card {
+  background: rgba(40, 46, 58, 0.85);
+  border: 1px solid rgba(143, 163, 177, 0.15);
+  border-top: 2px solid var(--color-accent);
+  border-radius: 6px;
+  overflow: hidden;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  animation: tc-arrive 0.5s ease-out both;
+}
+
+.tc-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4), 0 0 12px rgba(168, 28, 42, 0.15);
+}
+
+@keyframes tc-arrive {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Card Art */
+.tc-card__art {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  background: rgba(26, 30, 37, 0.6);
+}
+
+.tc-card__photo {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.tc-card__placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-title);
+  font-size: 3rem;
+  color: rgba(143, 163, 177, 0.15);
+  background: linear-gradient(135deg, rgba(40, 46, 58, 0.8), rgba(26, 30, 37, 0.9));
+}
+
+/* Card Header */
+.tc-card__header {
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid rgba(143, 163, 177, 0.1);
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 0.5rem;
+}
+
+.tc-card__identity {
+  min-width: 0;
+}
+
+.tc-card__name {
+  font-family: var(--font-title);
+  font-size: 1.5rem;
+  letter-spacing: 0.08em;
+  color: #E8E0D6;
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.tc-card__title {
+  font-size: 1.15rem;
+  color: rgba(143, 163, 177, 0.6);
+  font-style: italic;
+  margin: 0.25rem 0 0;
+}
+
+.tc-card__meta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.15rem;
+  flex-shrink: 0;
+}
+
+.tc-card__level {
+  font-family: var(--font-title);
+  font-size: 1rem;
+  letter-spacing: 0.06em;
+  color: var(--color-accent);
+}
+
+.tc-card__class {
+  font-size: 0.85rem;
+  color: rgba(143, 163, 177, 0.5);
+  letter-spacing: 0.04em;
+}
+
+/* Attributes */
+.tc-card__attrs {
+  padding: 0.75rem 1.25rem;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.4rem 1.25rem;
+  border-bottom: 1px solid rgba(143, 163, 177, 0.1);
+}
+
+.tc-attr {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 1rem;
+}
+
+.tc-attr__icon {
+  width: 1.4em;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.tc-attr__label {
+  font-family: monospace;
+  font-size: 0.85rem;
+  color: rgba(143, 163, 177, 0.5);
+  width: 2.5em;
+}
+
+.tc-stars {
+  display: flex;
+  gap: 2px;
+  font-size: 1rem;
+}
+
+.tc-star--filled {
+  color: var(--color-accent);
+}
+
+.tc-star--empty {
+  color: rgba(143, 163, 177, 0.2);
+}
+
+/* Abilities */
+.tc-card__abilities {
+  padding: 0.75rem 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  border-bottom: 1px solid rgba(143, 163, 177, 0.1);
+}
+
+.tc-ability {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.tc-ability__type {
+  font-family: var(--font-title);
+  font-size: 0.75rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(143, 163, 177, 0.35);
+}
+
+.tc-ability__name {
+  font-size: 1.25rem;
+  color: #E8E0D6;
+  font-style: italic;
+}
+
+.tc-ability__desc {
+  font-size: 1.1rem;
+  color: rgba(143, 163, 177, 0.6);
+  margin: 0;
+  line-height: 1.5;
+}
+
+/* Lore */
+.tc-card__lore {
+  padding: 0.75rem 1.25rem;
+}
+
+.tc-card__lore p {
+  font-size: 1.1rem;
+  color: rgba(143, 163, 177, 0.5);
+  line-height: 1.6;
+  margin: 0;
+  font-style: italic;
+}
+
+.hearth-empty {
+  text-align: center;
+  padding: 3rem;
+  color: rgba(143, 163, 177, 0.5);
+  font-style: italic;
+}
+
+/* Responsive */
+@media (max-width: 1100px) {
+  .tc-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 700px) {
+  .hearth-page {
+    padding: 1rem;
+  }
+
+  .tc-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .hearth-title {
+    font-size: 1.5rem;
+  }
+}
+
 /* ── Admin Waypoint Editor (full-screen page) ── */
 .wp-page {
   min-height: 100vh;

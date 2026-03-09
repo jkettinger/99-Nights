@@ -299,6 +299,16 @@ export default function Admin() {
         </section>
 
         <section className="admin-section">
+          <h2>Characters</h2>
+          <p style={{ marginBottom: '1rem', color: 'rgba(143, 163, 177, 0.6)', fontSize: '0.9rem' }}>
+            Manage party members and their RPG trading card attributes.
+          </p>
+          <Link to="/admin/characters" className="admin-btn--edit" style={{ display: 'inline-block', textDecoration: 'none' }}>
+            Open Character Manager
+          </Link>
+        </section>
+
+        <section className="admin-section">
           <h2>Road Waypoints</h2>
           <p style={{ marginBottom: '1rem', color: 'rgba(143, 163, 177, 0.6)', fontSize: '0.9rem' }}>
             Visual editor for tracing travel paths between destinations on the map.
