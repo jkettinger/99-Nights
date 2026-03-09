@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Link } from 'react-router-dom'
+import AdminNav from '../components/AdminNav'
 import './pages.css'
 
 interface Message {
@@ -65,9 +65,9 @@ export default function AdminMessages() {
   return (
     <div className="admin-page">
       <header className="admin-header">
-        <Link to="/admin" className="wp-page__back">&larr; Back to Admin</Link>
         <h1>Messages</h1>
       </header>
+      <AdminNav />
 
       {status && (
         <div className={`admin-message admin-message--${status.type}`} onClick={() => setStatus(null)}>

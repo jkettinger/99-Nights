@@ -1,7 +1,7 @@
 import { useState, useEffect, FormEvent } from 'react'
-import { Link } from 'react-router-dom'
 import IconPicker from '../components/IconPicker'
 import { ICON_MAP } from '../components/iconMap'
+import AdminNav from '../components/AdminNav'
 import './pages.css'
 
 interface Destination {
@@ -166,6 +166,7 @@ export default function Admin() {
       <header className="admin-header">
         <h1>Realm Administration</h1>
       </header>
+      <AdminNav />
 
       {message && (
         <div className={`admin-message admin-message--${message.type}`} onClick={clearMessage}>
@@ -314,35 +315,6 @@ export default function Admin() {
           )}
         </section>
 
-        <section className="admin-section">
-          <h2>Characters</h2>
-          <p style={{ marginBottom: '1rem', color: 'rgba(143, 163, 177, 0.6)', fontSize: '0.9rem' }}>
-            Manage party members and their RPG trading card attributes.
-          </p>
-          <Link to="/admin/characters" className="admin-btn--edit" style={{ display: 'inline-block', textDecoration: 'none' }}>
-            Open Character Manager
-          </Link>
-        </section>
-
-        <section className="admin-section">
-          <h2>Road Waypoints</h2>
-          <p style={{ marginBottom: '1rem', color: 'rgba(143, 163, 177, 0.6)', fontSize: '0.9rem' }}>
-            Visual editor for tracing travel paths between destinations on the map.
-          </p>
-          <Link to="/admin/waypoints" className="admin-btn--edit" style={{ display: 'inline-block', textDecoration: 'none' }}>
-            Open Waypoint Editor
-          </Link>
-        </section>
-
-        <section className="admin-section">
-          <h2>Messages</h2>
-          <p style={{ marginBottom: '1rem', color: 'rgba(143, 163, 177, 0.6)', fontSize: '0.9rem' }}>
-            View and manage messages received from the contact chat box.
-          </p>
-          <Link to="/admin/messages" className="admin-btn--edit" style={{ display: 'inline-block', textDecoration: 'none' }}>
-            Open Messages
-          </Link>
-        </section>
       </div>
     </div>
   )

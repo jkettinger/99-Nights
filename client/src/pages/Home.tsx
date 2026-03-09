@@ -27,7 +27,7 @@ const DESTINATION_MESSAGES: Record<string, string> = {
   'work': 'Duty calls at the forge.',
 }
 
-const AMBIENT_MESSAGES: [string, string][] = [
+const FALLBACK_MESSAGES: [string, string][] = [
   ['Guard', 'I used to be an adventurer like you, then I took an arrow to the knee.'],
   ['Merchant', "Fresh sweetrolls! Get 'em while they're warm!"],
   ['Bard', '\u266A Our hero, our hero, claims a warrior\'s heart... \u266A'],
@@ -70,7 +70,8 @@ export default function Home() {
   const debug = searchParams.get('debug') === 'true'
   const { messages, addMessage } = useChat()
   const welcomeSentRef = useRef(false)
-  const ambientIndexRef = useRef(Math.floor(Math.random() * AMBIENT_MESSAGES.length))
+  const [ambientMessages, setAmbientMessages] = useState<[string, string][] | null>(null)
+  const ambientIndexRef = useRef(0)
 
   useEffect(() => {
     if (hasPlayed) return
@@ -85,6 +86,26 @@ export default function Home() {
       .then((res) => res.ok ? res.json() : [])
       .then((data) => setDestinations(Array.isArray(data) ? data : []))
       .catch(() => {})
+  }, [])
+
+  // Fetch auto messages from API, fall back to hardcoded
+  useEffect(() => {
+    fetch('/api/auto-messages')
+      .then(res => res.ok ? res.json() : null)
+      .then(data => {
+        if (Array.isArray(data) && data.length > 0) {
+          const mapped: [string, string][] = data.map((m: { name: string; message: string }) => [m.name, m.message])
+          setAmbientMessages(mapped)
+          ambientIndexRef.current = Math.floor(Math.random() * mapped.length)
+        } else {
+          setAmbientMessages(FALLBACK_MESSAGES)
+          ambientIndexRef.current = Math.floor(Math.random() * FALLBACK_MESSAGES.length)
+        }
+      })
+      .catch(() => {
+        setAmbientMessages(FALLBACK_MESSAGES)
+        ambientIndexRef.current = Math.floor(Math.random() * FALLBACK_MESSAGES.length)
+      })
   }, [])
 
   useEffect(() => {
@@ -152,13 +173,14 @@ export default function Home() {
     addMessage('Jim', 'Greetings, adventurer! Welcome to the realm.')
   }, [shrunk, addMessage, messages.length])
 
-  // Ambient NPC messages — random interval, only while on the map
+  // Ambient NPC messages — random interval, only while on the map, waits for fetch
   useEffect(() => {
-    if (!shrunk) return
+    if (!shrunk || !ambientMessages) return
+    const msgs = ambientMessages
     function scheduleNext() {
       const delay = 30000 + Math.random() * 30000 // 30-60s
       return window.setTimeout(() => {
-        const [sender, text] = AMBIENT_MESSAGES[ambientIndexRef.current % AMBIENT_MESSAGES.length]!
+        const [sender, text] = msgs[ambientIndexRef.current % msgs.length]!
         ambientIndexRef.current++
         addMessage(sender, text)
         timerRef = scheduleNext()
@@ -166,7 +188,7 @@ export default function Home() {
     }
     let timerRef = scheduleNext()
     return () => clearTimeout(timerRef)
-  }, [shrunk, addMessage])
+  }, [shrunk, addMessage, ambientMessages])
 
   // Destination click chat message
   const addDestinationMessage = useCallback((slug: string) => {

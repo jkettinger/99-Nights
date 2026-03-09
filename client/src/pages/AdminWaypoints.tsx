@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
-import { Link } from 'react-router-dom'
 import AdminWaypointEditor from '../components/AdminWaypointEditor'
+import AdminNav from '../components/AdminNav'
 import './pages.css'
 
 interface Destination {
@@ -39,7 +39,6 @@ export default function AdminWaypoints() {
   return (
     <div className="wp-page">
       <header className="wp-page__header">
-        <Link to="/admin" className="wp-page__back">&larr; Back to Admin</Link>
         <h1>Road Waypoints</h1>
         {message && (
           <div
@@ -50,6 +49,7 @@ export default function AdminWaypoints() {
           </div>
         )}
       </header>
+      <AdminNav />
 
       {loading ? (
         <p className="admin-empty" style={{ padding: '2rem' }}>Loading...</p>

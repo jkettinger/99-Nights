@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, FormEvent } from 'react'
-import { Link } from 'react-router-dom'
+import AdminNav from '../components/AdminNav'
 import './pages.css'
 
 interface Character {
@@ -268,9 +268,9 @@ export default function AdminCharacters() {
   return (
     <div className="admin-page">
       <header className="admin-header">
-        <Link to="/admin" className="wp-page__back">&larr; Back to Admin</Link>
         <h1>Character Management</h1>
       </header>
+      <AdminNav />
 
       {message && (
         <div className={`admin-message admin-message--${message.type}`} onClick={() => setMessage(null)}>
