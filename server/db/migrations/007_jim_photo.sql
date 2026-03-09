@@ -1,0 +1,1 @@
+UPDATE characters SET photo='/images/jim-card.png' WHERE name='Jim' AND destination_slug='the-hearth'
