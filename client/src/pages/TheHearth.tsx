@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { Link } from 'react-router-dom'
 import './pages.css'
 
@@ -9,6 +9,7 @@ interface Character {
   class: string | null
   birthday: string | null
   photo: string | null
+  video: string | null
   strength: number
   dexterity: number
   intellect: number
@@ -58,11 +59,39 @@ function Stars({ count }: { count: number }) {
 
 function TradingCard({ character }: { character: Character }) {
   const level = calculateLevel(character.birthday)
+  const videoRef = useRef<HTMLVideoElement>(null)
+  const cardRef = useRef<HTMLElement>(null)
+  const [videoEnded, setVideoEnded] = useState(false)
+
+  useEffect(() => {
+    if (!character.video || videoEnded) return
+    const el = cardRef.current
+    if (!el) return
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0]?.isIntersecting && videoRef.current) {
+          videoRef.current.play().catch(() => {})
+        }
+      },
+      { threshold: 0.5 },
+    )
+    observer.observe(el)
+    return () => observer.disconnect()
+  }, [character.video, videoEnded])
 
   return (
-    <article className="tc-card">
+    <article className="tc-card" ref={cardRef}>
       <div className="tc-card__art">
-        {character.photo ? (
+        {character.video && !videoEnded ? (
+          <video
+            ref={videoRef}
+            src={character.video}
+            muted
+            playsInline
+            className="tc-card__photo"
+            onEnded={() => setVideoEnded(true)}
+          />
+        ) : character.photo ? (
           <img src={character.photo} alt={character.name} className="tc-card__photo" />
         ) : (
           <div className="tc-card__placeholder">{character.name.charAt(0)}</div>

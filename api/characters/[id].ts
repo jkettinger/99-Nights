@@ -10,6 +10,7 @@ interface CharacterRow extends RowDataPacket {
   class: string | null;
   birthday: string | null;
   photo: string | null;
+  video: string | null;
   strength: number;
   dexterity: number;
   intellect: number;
@@ -79,7 +80,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     if (!verifyAuth(req, res)) return;
 
     const {
-      name, title, class: charClass, birthday, photo,
+      name, title, class: charClass, birthday, photo, video,
       strength, dexterity, intellect, charisma, chaos, resolve,
       unique_trait_name, unique_trait_desc,
       passive_ability_name, passive_ability_desc,
@@ -108,6 +109,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     }
     if (photo != null && (typeof photo !== 'string' || photo.length > 255)) {
       res.status(400).json({ error: 'Photo must be a string of 255 characters or fewer' });
+      return;
+    }
+    if (video != null && (typeof video !== 'string' || video.length > 255)) {
+      res.status(400).json({ error: 'Video must be a string of 255 characters or fewer' });
       return;
     }
 
@@ -167,6 +172,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     if (charClass !== undefined) { fields.push('class = ?'); values.push(charClass?.trim() ?? null); }
     if (birthday !== undefined) { fields.push('birthday = ?'); values.push(birthday ?? null); }
     if (photo !== undefined) { fields.push('photo = ?'); values.push(photo?.trim() ?? null); }
+    if (video !== undefined) { fields.push('video = ?'); values.push(video?.trim() ?? null); }
     for (const attr of ATTRIBUTES) {
       const val = req.body[attr];
       if (val != null) {

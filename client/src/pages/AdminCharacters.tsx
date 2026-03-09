@@ -9,6 +9,7 @@ interface Character {
   class: string | null
   birthday: string | null
   photo: string | null
+  video: string | null
   strength: number
   dexterity: number
   intellect: number
@@ -32,6 +33,7 @@ interface CharForm {
   class: string
   birthday: string
   photo: string
+  video: string
   strength: number
   dexterity: number
   intellect: number
@@ -60,7 +62,7 @@ const ATTR_LABELS: Record<string, string> = {
 }
 
 const emptyForm: CharForm = {
-  name: '', title: '', class: '', birthday: '', photo: '',
+  name: '', title: '', class: '', birthday: '', photo: '', video: '',
   strength: 1, dexterity: 1, intellect: 1, charisma: 1, chaos: 1, resolve: 1,
   unique_trait_name: '', unique_trait_desc: '',
   passive_ability_name: '', passive_ability_desc: '',
@@ -164,6 +166,7 @@ export default function AdminCharacters() {
       class: c.class || '',
       birthday: c.birthday ? c.birthday.slice(0, 10) : '',
       photo: c.photo || '',
+      video: c.video || '',
       strength: c.strength,
       dexterity: c.dexterity,
       intellect: c.intellect,
@@ -204,6 +207,7 @@ export default function AdminCharacters() {
       class: form.class || null,
       birthday: form.birthday || null,
       photo: form.photo || null,
+      video: form.video || null,
       strength: form.strength,
       dexterity: form.dexterity,
       intellect: form.intellect,
@@ -328,6 +332,11 @@ export default function AdminCharacters() {
                 </div>
               )}
             </div>
+
+            <label>
+              <span>Video URL</span>
+              <input type="text" value={form.video} onChange={e => updateField('video', e.target.value)} placeholder="/videos/characters/layla-intro.mp4" />
+            </label>
 
             <div className="char-attrs">
               <span className="char-attrs__label">Attributes</span>

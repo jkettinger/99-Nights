@@ -10,6 +10,7 @@ interface CharacterRow extends RowDataPacket {
   class: string | null;
   birthday: string | null;
   photo: string | null;
+  video: string | null;
   strength: number;
   dexterity: number;
   intellect: number;
@@ -73,7 +74,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     if (!verifyAuth(req, res)) return;
 
     const {
-      name, title, class: charClass, birthday, photo,
+      name, title, class: charClass, birthday, photo, video,
       strength, dexterity, intellect, charisma, chaos, resolve,
       unique_trait_name, unique_trait_desc,
       passive_ability_name, passive_ability_desc,
@@ -102,6 +103,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     }
     if (photo != null && (typeof photo !== 'string' || photo.length > 255)) {
       res.status(400).json({ error: 'Photo must be a string of 255 characters or fewer' });
+      return;
+    }
+    if (video != null && (typeof video !== 'string' || video.length > 255)) {
+      res.status(400).json({ error: 'Video must be a string of 255 characters or fewer' });
       return;
     }
 
@@ -156,18 +161,19 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     try {
       const [result] = await pool.execute<ResultSetHeader>(
         `INSERT INTO characters (
-          name, title, class, birthday, photo,
+          name, title, class, birthday, photo, video,
           strength, dexterity, intellect, charisma, chaos, resolve,
           unique_trait_name, unique_trait_desc,
           passive_ability_name, passive_ability_desc,
           weakness, lore, status, sort_order, destination_slug
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
         [
           name.trim(),
           title?.trim() ?? null,
           charClass?.trim() ?? null,
           birthday ?? null,
           photo?.trim() ?? null,
+          video?.trim() ?? null,
           attrValues.strength ?? 1,
           attrValues.dexterity ?? 1,
           attrValues.intellect ?? 1,
