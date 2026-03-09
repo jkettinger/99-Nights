@@ -32,7 +32,10 @@ async function runMigrations(): Promise<string[]> {
     const conn = await pool.getConnection();
     try {
       await conn.beginTransaction();
-      await conn.query(sql);
+      const statements = sql.split(';').map(s => s.trim()).filter(s => s.length > 0);
+      for (const stmt of statements) {
+        await conn.query(stmt);
+      }
       await conn.execute('INSERT INTO migrations (filename) VALUES (?)', [filename]);
       await conn.commit();
       results.push(filename);
