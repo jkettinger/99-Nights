@@ -662,13 +662,15 @@
 }
 
 .chatbox__header--pulse {
-  animation: header-pulse 0.8s ease-in-out;
+  animation: header-pulse 1s ease-in-out;
 }
 
 @keyframes header-pulse {
-  0%   { border-color: rgba(168, 28, 42, 0.35); box-shadow: none; }
-  40%  { border-color: rgba(168, 28, 42, 0.8); box-shadow: 0 0 6px rgba(168, 28, 42, 0.4); }
-  100% { border-color: rgba(168, 28, 42, 0.35); box-shadow: none; }
+  0%   { border-color: rgba(168, 28, 42, 0.35); box-shadow: none; transform: scale(1); }
+  15%  { border-color: rgba(220, 40, 60, 1); box-shadow: 0 0 12px rgba(168, 28, 42, 0.7), 0 0 24px rgba(168, 28, 42, 0.3); transform: scale(1.03); }
+  30%  { transform: scale(1); }
+  50%  { border-color: rgba(220, 40, 60, 0.9); box-shadow: 0 0 10px rgba(168, 28, 42, 0.5), 0 0 20px rgba(168, 28, 42, 0.2); }
+  100% { border-color: rgba(168, 28, 42, 0.35); box-shadow: none; transform: scale(1); }
 }
 
 @keyframes minimize-glow {
