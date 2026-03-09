@@ -24,8 +24,8 @@ export const startToTown: Point[] = [
 
 export const spokes: Record<string, Point[]> = {
 
-  // North — up to The Keep
-  'the-keep': [
+  // North — up to The Hearth
+  'the-hearth': [
     [60, 66], [61, 59], [59, 56], [54, 54], [50, 50],
   ],
 

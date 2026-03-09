@@ -7,6 +7,7 @@ import authRoutes from './routes/auth.js';
 import destinationRoutes from './routes/destinations.js';
 import migrateRoutes from './routes/migrate.js';
 import roadWaypointRoutes from './routes/roadWaypoints.js';
+import characterRoutes from './routes/characters.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const isProduction = process.env.NODE_ENV === 'production';
@@ -33,6 +34,7 @@ app.get('/api/health', (_req, res) => {
 app.use('/api/auth', authRoutes);
 app.use('/api/destinations', destinationRoutes);
 app.use('/api/road-waypoints', roadWaypointRoutes);
+app.use('/api/characters', characterRoutes);
 app.use('/api', migrateRoutes);
 
 // In production, serve the built React app
