@@ -18,6 +18,7 @@ interface Destination {
 
 export default function Home() {
   const hasPlayed = sessionStorage.getItem('intro-played') === 'true'
+  const hasPlayedRef = useRef(hasPlayed)
   const [visible, setVisible] = useState(hasPlayed)
   const [shrunk, setShrunk] = useState(hasPlayed)
   const [muted, setMuted] = useState(() => sessionStorage.getItem('audio-muted') === 'true')
@@ -96,7 +97,7 @@ export default function Home() {
     const endX = mapEl.scrollWidth * 0.5 - window.innerWidth / 2
     const endY = mapEl.scrollHeight * 0.84 - window.innerHeight / 2
 
-    if (hasPlayed) {
+    if (hasPlayedRef.current) {
       // Returning visitor — instant scroll, no ceremony
       container.scrollTo(endX, endY)
       return
@@ -111,7 +112,7 @@ export default function Home() {
       container.scrollTo({ left: endX, top: endY, behavior: 'smooth' })
     }, 600)
     return () => clearTimeout(timer)
-  }, [shrunk, hasPlayed])
+  }, [shrunk])
 
   useEffect(() => {
     const audio = audioRef.current
