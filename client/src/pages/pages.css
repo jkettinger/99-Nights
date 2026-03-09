@@ -1078,6 +1078,89 @@
   outline-offset: 1px;
 }
 
+/* ── Mobile home page ── */
+@media (max-width: 768px) {
+  .home-page {
+    min-height: auto;
+    display: block;
+  }
+
+  .map-container {
+    max-height: none;
+    max-width: none;
+    overflow: visible;
+  }
+
+  /* Hide character portrait — let the map breathe */
+  .char-portrait {
+    display: none;
+  }
+
+  /* Legend becomes a compact bottom bar */
+  .name-card {
+    top: auto;
+    bottom: 0;
+    right: 0;
+    left: 0;
+    border-radius: 0;
+    border-top: 1px solid rgba(143, 163, 177, 0.2);
+    padding: 0.4rem 0.6rem;
+    background: rgba(30, 34, 42, 0.92);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+  }
+
+  .name-card h2 {
+    font-size: 0.75rem;
+    letter-spacing: 0.08em;
+    color: rgba(143, 163, 177, 0.7);
+  }
+
+  .map-legend {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 0.15rem 0.3rem;
+    margin-top: 0.3rem;
+    padding-top: 0.3rem;
+  }
+
+  .map-legend__item {
+    padding: 0.2rem 0.35rem;
+  }
+
+  .map-legend__name {
+    font-size: 0.65rem;
+  }
+
+  .map-legend__icon {
+    width: 16px;
+    height: 16px;
+    font-size: 0.65rem;
+  }
+
+  /* Keep map markers at desktop size — primary touch targets */
+  .map-marker {
+    padding: 4px;
+    margin: -4px;
+  }
+
+  .map-marker__label {
+    font-size: 0.6rem;
+  }
+
+  /* Warrior game piece — scale down a touch */
+  .warrior--shrunk {
+    height: 6%;
+  }
+
+  /* Audio control — clear of the name-card bottom bar */
+  .audio-control {
+    bottom: 3.5rem;
+    right: 1rem;
+    padding: 0.3rem 0.5rem;
+  }
+}
+
 /* Responsive adjustments */
 @media (max-width: 600px) {
   .admin-page {
