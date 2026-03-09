@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
-import { getPathToDestination } from '../data/roadPaths'
+import { startToTown as hardcodedStartToTown, spokes as hardcodedSpokes } from '../data/roadPaths'
 import type { Point } from '../data/roadPaths'
 import { ICON_MAP } from '../components/iconMap'
 import WaypointEditor from '../components/WaypointEditor'
@@ -150,19 +150,12 @@ export default function Home() {
     if (traveling) return
     setTraveling(true)
 
-    // Use dynamic waypoints from API if available, fall back to hardcoded data
-    let waypoints: Point[]
-    if (dynamicWaypoints) {
-      const startToTown = dynamicWaypoints['__start_to_town__']
-      const spoke = dynamicWaypoints[dest.slug]
-      if (startToTown && spoke) {
-        waypoints = [...startToTown, ...spoke]
-      } else {
-        waypoints = getPathToDestination(dest.slug, dest.map_x, dest.map_y)
-      }
-    } else {
-      waypoints = getPathToDestination(dest.slug, dest.map_x, dest.map_y)
-    }
+    // Per-segment fallback: each piece independently uses API data or hardcoded
+    const start: Point[] = dynamicWaypoints?.['__start_to_town__'] ?? hardcodedStartToTown
+    const spoke: Point[] | undefined = dynamicWaypoints?.[dest.slug] ?? hardcodedSpokes[dest.slug]
+    const waypoints: Point[] = spoke
+      ? [...start, ...spoke]
+      : [...start, [dest.map_x, dest.map_y]]
     const SPEED = 40 // ms per unit of distance — tune for feel
     let step = 0
 
