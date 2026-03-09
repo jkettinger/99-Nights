@@ -2,10 +2,13 @@ import { useState, useRef, useEffect, FormEvent } from 'react'
 import { useChat } from '../contexts/ChatContext'
 
 const SPAM_THRESHOLD_MS = 3000
+const AUTO_MINIMIZE_DELAY = 2500
+const isMobile = () => window.matchMedia('(max-width: 768px)').matches
 
 export default function ChatBox() {
   const { messages, addMessage } = useChat()
   const [minimized, setMinimized] = useState(false)
+  const [glowing, setGlowing] = useState(false)
   const [name, setName] = useState('')
   const [text, setText] = useState('')
   const [sending, setSending] = useState(false)
@@ -13,12 +16,33 @@ export default function ChatBox() {
   const honeypotRef = useRef('')
   const mountTimeRef = useRef(Date.now())
   const logRef = useRef<HTMLDivElement>(null)
+  const autoMinimizedRef = useRef(false)
+  const manualInteractionRef = useRef(false)
 
   // Auto-scroll to bottom when new messages arrive
   useEffect(() => {
     const el = logRef.current
     if (el) el.scrollTop = el.scrollHeight
   }, [messages])
+
+  // Mobile: auto-minimize after a brief moment on first load
+  useEffect(() => {
+    if (!isMobile() || autoMinimizedRef.current || manualInteractionRef.current) return
+    const timer = setTimeout(() => {
+      if (manualInteractionRef.current) return
+      autoMinimizedRef.current = true
+      setMinimized(true)
+      setGlowing(true)
+      setTimeout(() => setGlowing(false), 1200)
+    }, AUTO_MINIMIZE_DELAY)
+    return () => clearTimeout(timer)
+  }, [])
+
+  function handleToggle() {
+    manualInteractionRef.current = true
+    setMinimized(prev => !prev)
+    setGlowing(false)
+  }
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault()
@@ -77,16 +101,16 @@ export default function ChatBox() {
         <span className="chatbox__channel">[General]</span>
         <button
           type="button"
-          className="chatbox__minimize"
-          onClick={() => setMinimized(!minimized)}
+          className={`chatbox__minimize${glowing ? ' chatbox__minimize--glow' : ''}`}
+          onClick={handleToggle}
           aria-label={minimized ? 'Expand chat' : 'Minimize chat'}
         >
           {minimized ? '+' : '\u2013'}
         </button>
       </div>
 
-      {!minimized && (
-        <>
+      <div className="chatbox__content">
+        <div className="chatbox__content-inner">
           <div className="chatbox__log" ref={logRef}>
             {messages.length === 0 && (
               <p className="chatbox__empty">The chat is quiet...</p>
@@ -119,6 +143,7 @@ export default function ChatBox() {
                 onChange={(e) => setName(e.target.value)}
                 required
                 maxLength={100}
+                tabIndex={minimized ? -1 : 0}
               />
               <input
                 type="text"
@@ -128,15 +153,16 @@ export default function ChatBox() {
                 onChange={(e) => setText(e.target.value)}
                 required
                 maxLength={2000}
+                tabIndex={minimized ? -1 : 0}
               />
-              <button type="submit" className="chatbox__send" disabled={sending}>
+              <button type="submit" className="chatbox__send" disabled={sending} tabIndex={minimized ? -1 : 0}>
                 {sending ? '...' : 'Send'}
               </button>
             </div>
             {errorText && <p className="chatbox__error">{errorText}</p>}
           </form>
-        </>
-      )}
+        </div>
+      </div>
     </div>
   )
 }

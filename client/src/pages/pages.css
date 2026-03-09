@@ -635,6 +635,7 @@
 .chatbox--minimized .chatbox__header {
   border-radius: 4px;
   border-bottom: 2px solid rgba(168, 28, 42, 0.4);
+  transition: border-radius 0.3s ease 0.5s;
 }
 .chatbox__channel {
   font-size: 0.85rem;
@@ -651,9 +652,35 @@
   padding: 0 0.25rem;
   line-height: 1;
   transition: color 0.2s ease;
+  border-radius: 3px;
 }
 .chatbox__minimize:hover {
   color: #E8E0D6;
+}
+.chatbox__minimize--glow {
+  animation: minimize-glow 1.2s ease-in-out;
+}
+
+@keyframes minimize-glow {
+  0%   { color: rgba(143, 163, 177, 0.5); box-shadow: none; }
+  30%  { color: var(--color-accent); box-shadow: 0 0 8px rgba(168, 28, 42, 0.6), 0 0 16px rgba(168, 28, 42, 0.3); }
+  70%  { color: var(--color-accent); box-shadow: 0 0 8px rgba(168, 28, 42, 0.6), 0 0 16px rgba(168, 28, 42, 0.3); }
+  100% { color: rgba(143, 163, 177, 0.5); box-shadow: none; }
+}
+
+/* Chat content wrapper — enables smooth minimize transition */
+.chatbox__content {
+  display: grid;
+  grid-template-rows: 1fr;
+  transition: grid-template-rows 0.8s ease-in-out;
+  overflow: hidden;
+}
+.chatbox--minimized .chatbox__content {
+  grid-template-rows: 0fr;
+}
+.chatbox__content-inner {
+  min-height: 0;
+  overflow: hidden;
 }
 
 /* Chat log — scrollable message history */

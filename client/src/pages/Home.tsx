@@ -156,7 +156,7 @@ export default function Home() {
   useEffect(() => {
     if (!shrunk) return
     function scheduleNext() {
-      const delay = 15000 + Math.random() * 10000 // 15-25s
+      const delay = 30000 + Math.random() * 30000 // 30-60s
       return window.setTimeout(() => {
         const [sender, text] = AMBIENT_MESSAGES[ambientIndexRef.current % AMBIENT_MESSAGES.length]!
         ambientIndexRef.current++
