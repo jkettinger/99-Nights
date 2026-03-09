@@ -1087,7 +1087,6 @@
     min-height: 0;
     display: block;
     overflow: auto;
-    -webkit-overflow-scrolling: touch;
   }
 
   /* Map fills viewport height, width overflows naturally */
