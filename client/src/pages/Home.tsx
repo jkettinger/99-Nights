@@ -189,6 +189,10 @@ export default function Home() {
         <img src="/images/map.jpg" alt="Fantasy map" className="map-image" />
         <div className="map-overlay" />
 
+        <div className="char-portrait">
+          <img src="/images/char-pane.png" alt="Character portrait" className="char-portrait__img" />
+        </div>
+
         <div className="name-card">
           <h2>Jim Kettinger</h2>
           {shrunk && destinations.length > 0 && (
