@@ -661,6 +661,16 @@
   animation: minimize-glow 1.2s ease-in-out;
 }
 
+.chatbox__header--pulse {
+  animation: header-pulse 0.8s ease-in-out;
+}
+
+@keyframes header-pulse {
+  0%   { border-color: rgba(168, 28, 42, 0.35); box-shadow: none; }
+  40%  { border-color: rgba(168, 28, 42, 0.8); box-shadow: 0 0 6px rgba(168, 28, 42, 0.4); }
+  100% { border-color: rgba(168, 28, 42, 0.35); box-shadow: none; }
+}
+
 @keyframes minimize-glow {
   0%   { color: rgba(143, 163, 177, 0.5); box-shadow: none; }
   30%  { color: var(--color-accent); box-shadow: 0 0 8px rgba(168, 28, 42, 0.6), 0 0 16px rgba(168, 28, 42, 0.3); }

@@ -9,6 +9,8 @@ export default function ChatBox() {
   const { messages, addMessage } = useChat()
   const [minimized, setMinimized] = useState(false)
   const [glowing, setGlowing] = useState(false)
+  const [headerPulse, setHeaderPulse] = useState(false)
+  const prevMsgCountRef = useRef(messages.length)
   const [name, setName] = useState('')
   const [text, setText] = useState('')
   const [sending, setSending] = useState(false)
@@ -24,6 +26,16 @@ export default function ChatBox() {
     const el = logRef.current
     if (el) el.scrollTop = el.scrollHeight
   }, [messages])
+
+  // Pulse the header when new messages arrive while minimized
+  useEffect(() => {
+    if (messages.length > prevMsgCountRef.current && minimized) {
+      setHeaderPulse(false)
+      // Force a reflow so removing + re-adding the class restarts the animation
+      requestAnimationFrame(() => setHeaderPulse(true))
+    }
+    prevMsgCountRef.current = messages.length
+  }, [messages.length, minimized])
 
   // Mobile: auto-minimize after a brief moment on first load
   useEffect(() => {
@@ -97,7 +109,7 @@ export default function ChatBox() {
 
   return (
     <div className={`chatbox${minimized ? ' chatbox--minimized' : ''}`}>
-      <div className="chatbox__header">
+      <div className={`chatbox__header${headerPulse ? ' chatbox__header--pulse' : ''}`} onAnimationEnd={() => setHeaderPulse(false)}>
         <span className="chatbox__channel">[General]</span>
         <button
           type="button"
