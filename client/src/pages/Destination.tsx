@@ -21,6 +21,7 @@ export default function Destination() {
   const { setTrack } = useAudio()
 
   const isHearth = slug === 'the-hearth'
+  const isTavern = slug === 'the-tavern'
 
   useEffect(() => {
     if (isHearth) {
@@ -53,7 +54,7 @@ export default function Destination() {
   }
 
   return (
-    <div className="page-center destination-page">
+    <div className={`page-center destination-page${isTavern ? ' destination-page--tavern' : ''}`}>
       <div className="destination-card">
         <span className="destination-card__icon">
           {(() => {

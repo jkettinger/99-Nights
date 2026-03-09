@@ -1533,6 +1533,29 @@
   background: var(--color-bg);
 }
 
+.destination-page--tavern {
+  background: url('/images/tavern-bg.jpg') center/cover no-repeat fixed;
+  min-height: 100vh;
+  position: relative;
+}
+
+.destination-page--tavern::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: radial-gradient(ellipse at 50% 85%, rgba(255, 130, 40, 0.13), transparent 65%);
+  animation: fireGlow 5s ease-in-out infinite;
+  pointer-events: none;
+  z-index: 1;
+}
+
+@keyframes fireGlow {
+  0%, 100% { opacity: 0.35; }
+  35% { opacity: 0.75; }
+  50% { opacity: 0.6; }
+  75% { opacity: 0.85; }
+}
+
 .destination-card {
   text-align: center;
   max-width: 400px;
@@ -1542,6 +1565,8 @@
   border-top: 2px solid var(--color-accent);
   border-radius: 6px;
   animation: dest-arrive 0.5s ease-out;
+  position: relative;
+  z-index: 2;
 }
 
 .destination-card__icon {
