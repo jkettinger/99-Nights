@@ -8,12 +8,14 @@ import Destination from './pages/Destination'
 import ProtectedRoute from './components/ProtectedRoute'
 import FogOverlay from './components/FogOverlay'
 import { AudioProvider } from './contexts/AudioContext'
+import AudioControl from './components/AudioControl'
 
 function AppRoutes() {
   const location = useLocation()
   return (
     <>
       {location.pathname === '/' && sessionStorage.getItem('intro-played') !== 'true' && <FogOverlay />}
+      <AudioControl />
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/destination/:slug" element={<Destination />} />
