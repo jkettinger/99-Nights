@@ -85,16 +85,33 @@ export default function Home() {
     return () => el.removeEventListener('animationend', onEnd)
   }, [hasPlayed])
 
-  // Auto-scroll mobile map to center on gamepiece
+  // Mobile: cinematic pan to gamepiece (first visit) or instant scroll (return)
   useEffect(() => {
     if (!shrunk || window.innerWidth > 768) return
-    const container = document.querySelector('.home-page')
-    const mapEl = container?.querySelector('.map-container')
+    const container = document.querySelector('.home-page') as HTMLElement
+    const mapEl = container?.querySelector('.map-container') as HTMLElement
     if (!container || !mapEl) return
-    const targetX = mapEl.scrollWidth * 0.5 - window.innerWidth / 2
-    const targetY = mapEl.scrollHeight * 0.84 - window.innerHeight / 2
-    container.scrollTo(targetX, targetY)
-  }, [shrunk])
+
+    // Gamepiece position: center of viewport on [50%, 84%]
+    const endX = mapEl.scrollWidth * 0.5 - window.innerWidth / 2
+    const endY = mapEl.scrollHeight * 0.84 - window.innerHeight / 2
+
+    if (hasPlayed) {
+      // Returning visitor — instant scroll, no ceremony
+      container.scrollTo(endX, endY)
+      return
+    }
+
+    // First visit — cinematic sweep from top-center to gamepiece
+    const startX = mapEl.scrollWidth * 0.3 - window.innerWidth / 2
+    const startY = mapEl.scrollHeight * 0.1
+    container.scrollTo(startX, startY)
+
+    const timer = setTimeout(() => {
+      container.scrollTo({ left: endX, top: endY, behavior: 'smooth' })
+    }, 600)
+    return () => clearTimeout(timer)
+  }, [shrunk, hasPlayed])
 
   useEffect(() => {
     const audio = audioRef.current
