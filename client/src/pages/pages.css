@@ -1229,11 +1229,13 @@
     height: 6%;
   }
 
-  /* Audio control — float above the legend bar */
+  /* Audio control — compact on mobile, only lift above legend bar on the map */
   .audio-control {
-    bottom: 3.5rem;
     right: 1rem;
     padding: 0.3rem 0.5rem;
+  }
+  .audio-control--map {
+    bottom: 3.5rem;
   }
 }
 

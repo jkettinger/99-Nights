@@ -10,8 +10,10 @@ export default function AudioControl() {
   // Delay the fade-in only during the first-visit intro on the home page
   const introPlaying = location.pathname === '/' && sessionStorage.getItem('intro-played') !== 'true'
 
+  const onHomePage = location.pathname === '/'
+
   return (
-    <div className={`audio-control${introPlaying ? '' : ' audio-control--immediate'}`}>
+    <div className={`audio-control${introPlaying ? '' : ' audio-control--immediate'}${onHomePage ? ' audio-control--map' : ''}`}>
       <button
         type="button"
         className="audio-control__btn"
