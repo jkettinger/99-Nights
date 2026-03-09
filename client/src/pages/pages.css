@@ -280,15 +280,17 @@
 
 .map-marker__label {
   font-family: var(--font-title);
-  font-size: 0.6rem;
+  font-size: 0.75rem;
   letter-spacing: 0.08em;
   color: #E8E0D6;
-  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
   white-space: nowrap;
   opacity: 0;
   transform: translateY(-4px);
   transition: opacity 0.25s ease, transform 0.25s ease;
   pointer-events: none;
+  background: rgba(20, 22, 28, 0.85);
+  padding: 2px 8px;
+  border-radius: 4px;
 }
 
 .map-marker:hover .map-marker__icon,
@@ -1215,7 +1217,7 @@
   }
 
   .map-marker__label {
-    font-size: 0.6rem;
+    font-size: 0.7rem;
   }
 
   /* Warrior game piece — scale down a touch */
