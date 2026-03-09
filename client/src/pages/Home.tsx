@@ -85,17 +85,20 @@ export default function Home() {
     return () => el.removeEventListener('animationend', onEnd)
   }, [hasPlayed])
 
-  // Mobile: center viewport on gamepiece
+  // Mobile: center viewport on avatar position immediately on mount
   useEffect(() => {
-    if (!shrunk || window.innerWidth > 768) return
+    if (window.innerWidth > 768) return
     const container = document.querySelector('.home-page') as HTMLElement
     const mapEl = container?.querySelector('.map-container') as HTMLElement
     if (!container || !mapEl) return
 
-    const targetX = mapEl.scrollWidth * 0.5 - window.innerWidth / 2
-    const targetY = mapEl.scrollHeight * 0.84 - window.innerHeight / 2
-    container.scrollTo(targetX, targetY)
-  }, [shrunk])
+    // Wait a frame for layout to settle
+    requestAnimationFrame(() => {
+      const targetX = mapEl.scrollWidth * 0.5 - window.innerWidth / 2
+      const targetY = mapEl.scrollHeight * 0.84 - window.innerHeight / 2
+      container.scrollTo(targetX, targetY)
+    })
+  }, [])
 
   // Mobile: follow avatar during travel
   useEffect(() => {
