@@ -1326,9 +1326,9 @@
 }
 
 .party-status__text {
-  color: rgba(143, 163, 177, 0.6);
+  color: rgba(173, 193, 207, 0.75);
   font-style: italic;
-  font-size: 1.05rem;
+  font-size: 1.1rem;
 }
 
 /* Trading Card Grid */
@@ -1419,8 +1419,8 @@
 }
 
 .tc-card__title {
-  font-size: 1.15rem;
-  color: rgba(143, 163, 177, 0.6);
+  font-size: 1.3rem;
+  color: rgba(173, 193, 207, 0.8);
   font-style: italic;
   margin: 0.25rem 0 0;
 }
@@ -1513,14 +1513,14 @@
 }
 
 .tc-ability__name {
-  font-size: 1.25rem;
+  font-size: 1.35rem;
   color: #E8E0D6;
   font-style: italic;
 }
 
 .tc-ability__desc {
-  font-size: 1.1rem;
-  color: rgba(143, 163, 177, 0.6);
+  font-size: 1.2rem;
+  color: rgba(173, 193, 207, 0.75);
   margin: 0;
   line-height: 1.5;
 }
@@ -1531,8 +1531,8 @@
 }
 
 .tc-card__lore p {
-  font-size: 1.1rem;
-  color: rgba(143, 163, 177, 0.5);
+  font-size: 1.2rem;
+  color: rgba(173, 193, 207, 0.7);
   line-height: 1.6;
   margin: 0;
   font-style: italic;
