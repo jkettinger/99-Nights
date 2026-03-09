@@ -1089,11 +1089,10 @@
     overflow: auto;
   }
 
-  /* Map fills viewport height, width overflows naturally */
+  /* Map overflows viewport in both directions for free panning */
   .map-container {
-    height: 100vh;
-    height: 100dvh;
-    width: auto;
+    min-width: 180vw;
+    height: auto;
     max-height: none;
     max-width: none;
     aspect-ratio: 2816 / 1536;

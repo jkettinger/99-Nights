@@ -85,6 +85,17 @@ export default function Home() {
     return () => el.removeEventListener('animationend', onEnd)
   }, [hasPlayed])
 
+  // Auto-scroll mobile map to center on gamepiece
+  useEffect(() => {
+    if (!shrunk || window.innerWidth > 768) return
+    const container = document.querySelector('.home-page')
+    const mapEl = container?.querySelector('.map-container')
+    if (!container || !mapEl) return
+    const targetX = mapEl.scrollWidth * 0.5 - window.innerWidth / 2
+    const targetY = mapEl.scrollHeight * 0.84 - window.innerHeight / 2
+    container.scrollTo(targetX, targetY)
+  }, [shrunk])
+
   useEffect(() => {
     const audio = audioRef.current
     if (!audio) return
