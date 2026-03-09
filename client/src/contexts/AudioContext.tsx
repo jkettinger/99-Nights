@@ -45,9 +45,28 @@ export function AudioProvider({ children }: { children: ReactNode }) {
   const location = useLocation()
   const onMap = location.pathname === '/'
 
-  // Sync volume to element — 0 when off the map so music continues silently
+  // Sync volume to element — fade out when leaving the map, restore when returning
+  const fadeRef = useRef<number>(undefined)
   useEffect(() => {
-    if (audioRef.current) audioRef.current.volume = onMap ? volume : 0
+    const audio = audioRef.current
+    if (!audio) return
+    clearInterval(fadeRef.current)
+    const target = onMap ? volume : 0
+    if (target < audio.volume) {
+      // Fade out over ~1.5s
+      fadeRef.current = window.setInterval(() => {
+        const next = audio.volume - 0.05
+        if (next <= target) {
+          audio.volume = target
+          clearInterval(fadeRef.current)
+        } else {
+          audio.volume = next
+        }
+      }, 50)
+    } else {
+      audio.volume = target
+    }
+    return () => clearInterval(fadeRef.current)
   }, [volume, onMap])
 
   function toggleMute() {
