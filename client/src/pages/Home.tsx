@@ -145,12 +145,12 @@ export default function Home() {
     container.scrollTo({ left: targetX, top: targetY, behavior: 'smooth' })
   }, [avatarPos, traveling])
 
-  // Welcome message when avatar finishes loading
+  // Welcome message when avatar finishes loading — skip if chat already has history
   useEffect(() => {
-    if (!shrunk || welcomeSentRef.current) return
+    if (!shrunk || welcomeSentRef.current || messages.length > 0) return
     welcomeSentRef.current = true
     addMessage('Jim', 'Greetings, adventurer! Welcome to the realm.')
-  }, [shrunk, addMessage])
+  }, [shrunk, addMessage, messages.length])
 
   // Ambient NPC messages — random interval, only while on the map
   useEffect(() => {
