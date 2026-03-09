@@ -13,6 +13,7 @@ interface Destination {
   map_y: number
   icon: string | null
   audio: string | null
+  chat_message: string | null
   created_at: string
   updated_at: string
 }
@@ -25,6 +26,7 @@ type DestinationForm = {
   map_y: string
   icon: string
   audio: string
+  chat_message: string
 }
 
 const emptyForm: DestinationForm = {
@@ -35,6 +37,7 @@ const emptyForm: DestinationForm = {
   map_y: '',
   icon: '',
   audio: '',
+  chat_message: '',
 }
 
 function authHeaders(): Record<string, string> {
@@ -83,6 +86,7 @@ export default function Admin() {
       map_y: String(dest.map_y),
       icon: dest.icon || '',
       audio: dest.audio || '',
+      chat_message: dest.chat_message || '',
     })
     setConfirmDeleteId(null)
     clearMessage()
@@ -106,6 +110,7 @@ export default function Admin() {
       map_y: parseFloat(form.map_y),
       icon: form.icon || null,
       audio: form.audio || null,
+      chat_message: form.chat_message || null,
     }
 
     try {
@@ -251,6 +256,15 @@ export default function Admin() {
                 value={form.audio}
                 onChange={(e) => updateField('audio', e.target.value)}
                 placeholder="/audio/ember.mp3"
+              />
+            </label>
+            <label>
+              <span>Chat Message</span>
+              <input
+                type="text"
+                value={form.chat_message}
+                onChange={(e) => updateField('chat_message', e.target.value)}
+                placeholder="Ah, I can't wait to see the brood!"
               />
             </label>
             <div className="admin-form__actions">

@@ -16,15 +16,7 @@ interface Destination {
   map_x: number
   map_y: number
   icon: string | null
-}
-
-const DESTINATION_MESSAGES: Record<string, string> = {
-  'the-hearth': "Ah, I can't wait to see the brood!",
-  'the-keep': 'To the Keep! Important business awaits.',
-  'the-arena': 'Time to test our mettle in the Arena!',
-  'the-library': 'Knowledge awaits in the ancient stacks...',
-  'the-tavern': 'Nothing like a cold mead after a long journey.',
-  'work': 'Duty calls at the forge.',
+  chat_message: string | null
 }
 
 const FALLBACK_MESSAGES: [string, string][] = [
@@ -191,14 +183,13 @@ export default function Home() {
   }, [shrunk, addMessage, ambientMessages])
 
   // Destination click chat message
-  const addDestinationMessage = useCallback((slug: string) => {
-    const msg = DESTINATION_MESSAGES[slug] || 'Onward, to adventure!'
-    addMessage('Jim', msg)
+  const addDestinationMessage = useCallback((dest: Destination) => {
+    addMessage('Jim', dest.chat_message || 'Onward, to adventure!')
   }, [addMessage])
 
   function handleMarkerClick(dest: Destination) {
     if (traveling) return
-    addDestinationMessage(dest.slug)
+    addDestinationMessage(dest)
     setTraveling(true)
 
     // Per-segment fallback: each piece independently uses API data or hardcoded

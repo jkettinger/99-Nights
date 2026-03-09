@@ -24,7 +24,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method === 'POST') {
     if (!verifyAuth(req, res)) return;
 
-    const { name, slug, description, map_x, map_y, icon, audio } = req.body;
+    const { name, slug, description, map_x, map_y, icon, audio, chat_message } = req.body;
 
     if (!name || typeof name !== 'string' || name.trim().length === 0) {
       res.status(400).json({ error: 'Name is required and must be a non-empty string' });
@@ -84,10 +84,20 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       return;
     }
 
+    if (chat_message != null && typeof chat_message !== 'string') {
+      res.status(400).json({ error: 'Chat message must be a string if provided' });
+      return;
+    }
+
+    if (chat_message != null && chat_message.trim().length > 255) {
+      res.status(400).json({ error: 'Chat message must be 255 characters or fewer' });
+      return;
+    }
+
     try {
       const [result] = await pool.execute<ResultSetHeader>(
-        'INSERT INTO destinations (name, slug, description, map_x, map_y, icon, audio) VALUES (?, ?, ?, ?, ?, ?, ?)',
-        [name.trim(), slug, description?.trim() ?? null, x, y, icon?.trim() ?? null, audio?.trim() ?? null]
+        'INSERT INTO destinations (name, slug, description, map_x, map_y, icon, audio, chat_message) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+        [name.trim(), slug, description?.trim() ?? null, x, y, icon?.trim() ?? null, audio?.trim() ?? null, chat_message?.trim() ?? null]
       );
 
       const [rows] = await pool.execute<DestinationRow[]>(

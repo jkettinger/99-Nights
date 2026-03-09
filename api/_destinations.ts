@@ -9,6 +9,7 @@ export interface DestinationRow extends RowDataPacket {
   map_y: number;
   icon: string | null;
   audio: string | null;
+  chat_message: string | null;
   created_at: Date;
   updated_at: Date;
 }

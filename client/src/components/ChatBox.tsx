@@ -11,7 +11,7 @@ export default function ChatBox() {
   const [glowing, setGlowing] = useState(false)
   const [headerPulse, setHeaderPulse] = useState(false)
   const prevMsgCountRef = useRef(messages.length)
-  const [name, setName] = useState('')
+  const [name, setName] = useState(() => sessionStorage.getItem('chatbox-name') || '')
   const [text, setText] = useState('')
   const [sending, setSending] = useState(false)
   const [errorText, setErrorText] = useState('')
@@ -99,6 +99,7 @@ export default function ChatBox() {
         return
       }
 
+      sessionStorage.setItem('chatbox-name', trimmedName)
       addMessage('Jim', 'Your raven has been sent. I\'ll respond soon!')
     } catch {
       setErrorText('No connection to the realm. Try again.')
@@ -110,7 +111,7 @@ export default function ChatBox() {
   return (
     <div className={`chatbox${minimized ? ' chatbox--minimized' : ''}`}>
       <div className={`chatbox__header${headerPulse ? ' chatbox__header--pulse' : ''}`} onAnimationEnd={() => setHeaderPulse(false)}>
-        <span className="chatbox__channel">[General]</span>
+        <span className="chatbox__channel">Chat Messages</span>
         <button
           type="button"
           className={`chatbox__minimize${glowing ? ' chatbox__minimize--glow' : ''}`}

@@ -12,6 +12,7 @@ interface DestinationRow extends RowDataPacket {
   map_y: number;
   icon: string | null;
   audio: string | null;
+  chat_message: string | null;
   created_at: Date;
   updated_at: Date;
 }
@@ -64,7 +65,7 @@ router.get('/:id', async (req: Request, res: Response): Promise<void> => {
 
 // POST /api/destinations — create (auth required)
 router.post('/', authenticate, async (req: Request, res: Response): Promise<void> => {
-  const { name, slug, description, map_x, map_y, icon, audio } = req.body;
+  const { name, slug, description, map_x, map_y, icon, audio, chat_message } = req.body;
 
   if (!name || typeof name !== 'string' || name.trim().length === 0) {
     res.status(400).json({ error: 'Name is required and must be a non-empty string' });
@@ -124,10 +125,20 @@ router.post('/', authenticate, async (req: Request, res: Response): Promise<void
     return;
   }
 
+  if (chat_message != null && typeof chat_message !== 'string') {
+    res.status(400).json({ error: 'Chat message must be a string if provided' });
+    return;
+  }
+
+  if (chat_message != null && chat_message.trim().length > 255) {
+    res.status(400).json({ error: 'Chat message must be 255 characters or fewer' });
+    return;
+  }
+
   try {
     const [result] = await pool.execute<ResultSetHeader>(
-      'INSERT INTO destinations (name, slug, description, map_x, map_y, icon, audio) VALUES (?, ?, ?, ?, ?, ?, ?)',
-      [name.trim(), slug, description?.trim() ?? null, x, y, icon?.trim() ?? null, audio?.trim() ?? null]
+      'INSERT INTO destinations (name, slug, description, map_x, map_y, icon, audio, chat_message) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+      [name.trim(), slug, description?.trim() ?? null, x, y, icon?.trim() ?? null, audio?.trim() ?? null, chat_message?.trim() ?? null]
     );
 
     const [rows] = await pool.execute<DestinationRow[]>(
@@ -154,7 +165,7 @@ router.put('/:id', authenticate, async (req: Request, res: Response): Promise<vo
     return;
   }
 
-  const { name, slug, description, map_x, map_y, icon, audio } = req.body;
+  const { name, slug, description, map_x, map_y, icon, audio, chat_message } = req.body;
 
   if (name != null && (typeof name !== 'string' || name.trim().length === 0)) {
     res.status(400).json({ error: 'Name must be a non-empty string' });
@@ -217,6 +228,16 @@ router.put('/:id', authenticate, async (req: Request, res: Response): Promise<vo
     return;
   }
 
+  if (chat_message != null && typeof chat_message !== 'string') {
+    res.status(400).json({ error: 'Chat message must be a string if provided' });
+    return;
+  }
+
+  if (chat_message != null && chat_message.trim().length > 255) {
+    res.status(400).json({ error: 'Chat message must be 255 characters or fewer' });
+    return;
+  }
+
   // Build dynamic update query — only update fields that were provided
   const fields: string[] = [];
   const values: any[] = [];
@@ -228,6 +249,7 @@ router.put('/:id', authenticate, async (req: Request, res: Response): Promise<vo
   if (map_y != null) { fields.push('map_y = ?'); values.push(parseFloat(map_y)); }
   if (icon !== undefined) { fields.push('icon = ?'); values.push(icon?.trim() ?? null); }
   if (audio !== undefined) { fields.push('audio = ?'); values.push(audio?.trim() ?? null); }
+  if (chat_message !== undefined) { fields.push('chat_message = ?'); values.push(chat_message?.trim() ?? null); }
 
   if (fields.length === 0) {
     res.status(400).json({ error: 'No fields to update' });

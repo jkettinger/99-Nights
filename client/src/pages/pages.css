@@ -639,7 +639,7 @@
 }
 .chatbox__channel {
   font-size: 0.85rem;
-  color: var(--color-accent);
+  color: #E8E0D6;
   letter-spacing: 0.04em;
   font-weight: 600;
 }
