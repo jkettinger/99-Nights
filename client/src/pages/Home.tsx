@@ -190,11 +190,12 @@ export default function Home() {
         <div className="map-overlay" />
 
         <div className="char-portrait">
+          <h2 className="char-portrait__name">Jim Kettinger</h2>
           <img src="/images/char-pane.png" alt="Character portrait" className="char-portrait__img" />
         </div>
 
         <div className="name-card">
-          <h2>Jim Kettinger</h2>
+          <h2>Legend</h2>
           {shrunk && destinations.length > 0 && (
             <nav className="map-legend" aria-label="Destinations">
               {destinations.map((dest, i) => {
