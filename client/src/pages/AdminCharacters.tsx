@@ -1,4 +1,4 @@
-import { useState, useEffect, FormEvent } from 'react'
+import { useState, useEffect, useRef, FormEvent } from 'react'
 import { Link } from 'react-router-dom'
 import './pages.css'
 
@@ -112,6 +112,35 @@ export default function AdminCharacters() {
   const [message, setMessage] = useState<{ text: string; type: 'success' | 'error' } | null>(null)
   const [loading, setLoading] = useState(true)
   const [submitting, setSubmitting] = useState(false)
+  const [uploading, setUploading] = useState(false)
+  const fileInputRef = useRef<HTMLInputElement>(null)
+
+  async function handleUpload(file: File) {
+    setUploading(true)
+    try {
+      const token = localStorage.getItem('token')
+      const body = new FormData()
+      body.append('file', file)
+      const res = await fetch('/api/upload', {
+        method: 'POST',
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
+        body,
+      })
+      if (!res.ok) {
+        const data = await res.json().catch(() => null)
+        setMessage({ text: data?.error || 'Upload failed', type: 'error' })
+        return
+      }
+      const { url } = await res.json()
+      updateField('photo', url)
+      setMessage({ text: 'Image uploaded', type: 'success' })
+    } catch {
+      setMessage({ text: 'Upload failed — unable to connect', type: 'error' })
+    } finally {
+      setUploading(false)
+      if (fileInputRef.current) fileInputRef.current.value = ''
+    }
+  }
 
   async function fetchCharacters() {
     try {
@@ -271,10 +300,34 @@ export default function AdminCharacters() {
               </label>
             </div>
 
-            <label>
-              <span>Photo URL</span>
-              <input type="text" value={form.photo} onChange={e => updateField('photo', e.target.value)} placeholder="/images/characters/layla.jpg" />
-            </label>
+            <div className="photo-field">
+              <label className="photo-field__label">
+                <span>Photo URL</span>
+                <div className="photo-field__row">
+                  <input type="text" value={form.photo} onChange={e => updateField('photo', e.target.value)} placeholder="/images/characters/layla.jpg" />
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/*"
+                    className="photo-field__file-input"
+                    onChange={e => { if (e.target.files?.[0]) handleUpload(e.target.files[0]) }}
+                  />
+                  <button
+                    type="button"
+                    className="admin-btn--secondary photo-field__upload-btn"
+                    disabled={uploading}
+                    onClick={() => fileInputRef.current?.click()}
+                  >
+                    {uploading ? 'Uploading\u2026' : 'Choose Image'}
+                  </button>
+                </div>
+              </label>
+              {form.photo && (
+                <div className="photo-field__preview">
+                  <img src={form.photo} alt="Character preview" className="photo-field__thumb" />
+                </div>
+              )}
+            </div>
 
             <div className="char-attrs">
               <span className="char-attrs__label">Attributes</span>

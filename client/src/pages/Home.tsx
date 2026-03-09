@@ -3,6 +3,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom'
 import { startToTown as hardcodedStartToTown, spokes as hardcodedSpokes } from '../data/roadPaths'
 import type { Point } from '../data/roadPaths'
 import { ICON_MAP } from '../components/iconMap'
+import { useAudio } from '../contexts/AudioContext'
 import WaypointEditor from '../components/WaypointEditor'
 import './pages.css'
 
@@ -20,19 +21,11 @@ export default function Home() {
   const hasPlayed = sessionStorage.getItem('intro-played') === 'true'
   const [visible, setVisible] = useState(hasPlayed)
   const [shrunk, setShrunk] = useState(hasPlayed)
-  const [muted, setMuted] = useState(() => sessionStorage.getItem('audio-muted') === 'true')
-  const [volume, setVolume] = useState(() => {
-    const stored = sessionStorage.getItem('audio-volume')
-    if (stored === null) return 0.75
-    const val = parseFloat(stored)
-    return Number.isFinite(val) && val >= 0 && val <= 1 ? val : 0.75
-  })
-  const [audioFailed, setAudioFailed] = useState(false)
   const [destinations, setDestinations] = useState<Destination[]>([])
   const [dynamicWaypoints, setDynamicWaypoints] = useState<Record<string, Point[]> | null>(null)
   const [avatarPos, setAvatarPos] = useState({ x: 50, y: 84 })
   const [traveling, setTraveling] = useState(false)
-  const audioRef = useRef<HTMLAudioElement>(null)
+  const { muted, volume, audioFailed, toggleMute, handleVolumeChange } = useAudio()
   const warriorRef = useRef<HTMLDivElement>(null)
   const travelTimeout = useRef<number>(undefined)
   const navigate = useNavigate()
@@ -112,67 +105,6 @@ export default function Home() {
     container.scrollTo({ left: targetX, top: targetY, behavior: 'smooth' })
   }, [avatarPos, traveling])
 
-  useEffect(() => {
-    const audio = audioRef.current
-    if (!audio) return
-    const wasMuted = sessionStorage.getItem('audio-muted') === 'true'
-    if (wasMuted) {
-      audio.muted = true
-    } else {
-      audio.play().catch(() => {
-        audio.muted = true
-        setMuted(true)
-      })
-    }
-  }, [])
-
-  useEffect(() => {
-    if (audioRef.current) {
-      audioRef.current.volume = volume
-    }
-  }, [volume])
-
-  const toggleMute = () => {
-    const audio = audioRef.current
-    if (!audio) return
-    if (muted) {
-      audio.muted = false
-      setMuted(false)
-      sessionStorage.setItem('audio-muted', 'false')
-      audio.play().catch(() => {
-        audio.muted = true
-        setMuted(true)
-        sessionStorage.setItem('audio-muted', 'true')
-      })
-    } else {
-      audio.muted = true
-      setMuted(true)
-      sessionStorage.setItem('audio-muted', 'true')
-    }
-  }
-
-  const handleVolume = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const val = parseFloat(e.target.value)
-    setVolume(val)
-    sessionStorage.setItem('audio-volume', String(val))
-    if (val === 0) {
-      setMuted(true)
-      sessionStorage.setItem('audio-muted', 'true')
-      if (audioRef.current) audioRef.current.muted = true
-    } else if (muted) {
-      setMuted(false)
-      sessionStorage.setItem('audio-muted', 'false')
-      if (audioRef.current) {
-        audioRef.current.muted = false
-        audioRef.current.play().catch(() => {
-          audioRef.current!.muted = true
-          setMuted(true)
-          sessionStorage.setItem('audio-muted', 'true')
-        })
-      }
-    }
-  }
-
   function handleMarkerClick(dest: Destination) {
     if (traveling) return
     setTraveling(true)
@@ -209,9 +141,6 @@ export default function Home() {
 
   return (
     <div className="home-page">
-      <audio ref={audioRef} src="/audio/echos.mp3" loop
-        onError={() => setAudioFailed(true)} />
-
       <div className="map-container">
         <img src="/images/map.jpg" alt="Fantasy map" className="map-image" />
         <div className="map-overlay" />
@@ -318,7 +247,7 @@ export default function Home() {
           max="1"
           step="0.05"
           value={volume}
-          onChange={handleVolume}
+          onChange={handleVolumeChange}
           aria-label="Volume"
         />
       </div>}

@@ -7,6 +7,7 @@ import AdminCharacters from './pages/AdminCharacters'
 import Destination from './pages/Destination'
 import ProtectedRoute from './components/ProtectedRoute'
 import FogOverlay from './components/FogOverlay'
+import { AudioProvider } from './contexts/AudioContext'
 
 function AppRoutes() {
   const location = useLocation()
@@ -49,7 +50,9 @@ function AppRoutes() {
 export default function App() {
   return (
     <BrowserRouter>
-      <AppRoutes />
+      <AudioProvider>
+        <AppRoutes />
+      </AudioProvider>
     </BrowserRouter>
   )
 }

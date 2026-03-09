@@ -775,6 +775,64 @@
   flex: 1;
 }
 
+/* ── Photo upload field ── */
+.photo-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.photo-field__label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.photo-field__row {
+  display: flex;
+  gap: 0.5rem;
+  align-items: stretch;
+}
+
+.photo-field__row input[type="text"] {
+  flex: 1;
+  min-width: 0;
+}
+
+.photo-field__file-input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+}
+
+.photo-field__upload-btn {
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.photo-field__upload-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.photo-field__preview {
+  width: 64px;
+  height: 64px;
+  border-radius: 4px;
+  overflow: hidden;
+  border: 1px solid rgba(143, 163, 177, 0.15);
+  background: rgba(26, 30, 37, 0.6);
+}
+
+.photo-field__thumb {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
 .admin-form__actions {
   display: flex;
   gap: 0.75rem;
