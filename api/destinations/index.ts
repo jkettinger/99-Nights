@@ -24,7 +24,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method === 'POST') {
     if (!verifyAuth(req, res)) return;
 
-    const { name, slug, description, map_x, map_y, icon } = req.body;
+    const { name, slug, description, map_x, map_y, icon, audio } = req.body;
 
     if (!name || typeof name !== 'string' || name.trim().length === 0) {
       res.status(400).json({ error: 'Name is required and must be a non-empty string' });
@@ -74,10 +74,20 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       return;
     }
 
+    if (audio != null && typeof audio !== 'string') {
+      res.status(400).json({ error: 'Audio must be a string if provided' });
+      return;
+    }
+
+    if (audio != null && audio.trim().length > 255) {
+      res.status(400).json({ error: 'Audio path must be 255 characters or fewer' });
+      return;
+    }
+
     try {
       const [result] = await pool.execute<ResultSetHeader>(
-        'INSERT INTO destinations (name, slug, description, map_x, map_y, icon) VALUES (?, ?, ?, ?, ?, ?)',
-        [name.trim(), slug, description?.trim() ?? null, x, y, icon?.trim() ?? null]
+        'INSERT INTO destinations (name, slug, description, map_x, map_y, icon, audio) VALUES (?, ?, ?, ?, ?, ?, ?)',
+        [name.trim(), slug, description?.trim() ?? null, x, y, icon?.trim() ?? null, audio?.trim() ?? null]
       );
 
       const [rows] = await pool.execute<DestinationRow[]>(

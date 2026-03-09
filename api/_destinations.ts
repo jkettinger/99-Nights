@@ -8,6 +8,7 @@ export interface DestinationRow extends RowDataPacket {
   map_x: number;
   map_y: number;
   icon: string | null;
+  audio: string | null;
   created_at: Date;
   updated_at: Date;
 }

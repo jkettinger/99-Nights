@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import { Link } from 'react-router-dom'
+import { useAudio } from '../contexts/AudioContext'
 import './pages.css'
 
 interface Character {
@@ -90,6 +91,7 @@ function TradingCard({ character }: { character: Character }) {
             playsInline
             className="tc-card__photo"
             onEnded={() => setVideoEnded(true)}
+            onError={() => setVideoEnded(true)}
           />
         ) : character.photo ? (
           <img src={character.photo} alt={character.name} className="tc-card__photo" />
@@ -157,6 +159,20 @@ export default function TheHearth() {
   const [characters, setCharacters] = useState<Character[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(false)
+  const { setTrack } = useAudio()
+
+  // Fetch destination data to check for audio track
+  useEffect(() => {
+    fetch('/api/destinations')
+      .then(res => res.ok ? res.json() : [])
+      .then(data => {
+        const list = Array.isArray(data) ? data : []
+        const hearth = list.find((d: { slug: string; audio?: string | null }) => d.slug === 'the-hearth')
+        if (hearth?.audio) setTrack(hearth.audio)
+      })
+      .catch(() => {})
+    return () => setTrack(null)
+  }, [setTrack])
 
   useEffect(() => {
     fetch('/api/characters?destination=the-hearth')

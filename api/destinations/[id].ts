@@ -39,7 +39,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method === 'PUT') {
     if (!verifyAuth(req, res)) return;
 
-    const { name, slug, description, map_x, map_y, icon } = req.body;
+    const { name, slug, description, map_x, map_y, icon, audio } = req.body;
 
     if (name != null && (typeof name !== 'string' || name.trim().length === 0)) {
       res.status(400).json({ error: 'Name must be a non-empty string' });
@@ -92,6 +92,16 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       return;
     }
 
+    if (audio != null && typeof audio !== 'string') {
+      res.status(400).json({ error: 'Audio must be a string if provided' });
+      return;
+    }
+
+    if (audio != null && audio.trim().length > 255) {
+      res.status(400).json({ error: 'Audio path must be 255 characters or fewer' });
+      return;
+    }
+
     const fields: string[] = [];
     const values: any[] = [];
 
@@ -101,6 +111,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     if (map_x != null) { fields.push('map_x = ?'); values.push(parseFloat(map_x)); }
     if (map_y != null) { fields.push('map_y = ?'); values.push(parseFloat(map_y)); }
     if (icon !== undefined) { fields.push('icon = ?'); values.push(icon?.trim() ?? null); }
+    if (audio !== undefined) { fields.push('audio = ?'); values.push(audio?.trim() ?? null); }
 
     if (fields.length === 0) {
       res.status(400).json({ error: 'No fields to update' });

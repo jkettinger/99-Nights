@@ -12,6 +12,7 @@ interface Destination {
   map_x: number
   map_y: number
   icon: string | null
+  audio: string | null
   created_at: string
   updated_at: string
 }
@@ -23,6 +24,7 @@ type DestinationForm = {
   map_x: string
   map_y: string
   icon: string
+  audio: string
 }
 
 const emptyForm: DestinationForm = {
@@ -32,6 +34,7 @@ const emptyForm: DestinationForm = {
   map_x: '',
   map_y: '',
   icon: '',
+  audio: '',
 }
 
 function authHeaders(): Record<string, string> {
@@ -79,6 +82,7 @@ export default function Admin() {
       map_x: String(dest.map_x),
       map_y: String(dest.map_y),
       icon: dest.icon || '',
+      audio: dest.audio || '',
     })
     setConfirmDeleteId(null)
     clearMessage()
@@ -101,6 +105,7 @@ export default function Admin() {
       map_x: parseFloat(form.map_x),
       map_y: parseFloat(form.map_y),
       icon: form.icon || null,
+      audio: form.audio || null,
     }
 
     try {
@@ -238,6 +243,15 @@ export default function Admin() {
                 />
               </label>
             </div>
+            <label>
+              <span>Audio URL</span>
+              <input
+                type="text"
+                value={form.audio}
+                onChange={(e) => updateField('audio', e.target.value)}
+                placeholder="/audio/ember.mp3"
+              />
+            </label>
             <div className="admin-form__actions">
               <button type="submit" disabled={submitting}>{submitting ? 'Saving...' : editingId ? 'Update' : 'Create'}</button>
               {editingId && (
@@ -264,6 +278,7 @@ export default function Admin() {
                     <th>Slug</th>
                     <th>Position</th>
                     <th>Icon</th>
+                    <th>Audio</th>
                     <th>Actions</th>
                   </tr>
                 </thead>
@@ -279,6 +294,7 @@ export default function Admin() {
                           return entry ? <entry.component size={16} /> : '—'
                         })()}
                       </td>
+                      <td className="admin-table__slug">{dest.audio || '—'}</td>
                       <td className="admin-table__actions">
                         <button className="admin-btn--edit" onClick={() => startEdit(dest)}>Edit</button>
                         {confirmDeleteId === dest.id ? (

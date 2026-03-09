@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { ICON_MAP } from '../components/iconMap'
+import { useAudio } from '../contexts/AudioContext'
 import TheHearth from './TheHearth'
 import './pages.css'
 
@@ -10,12 +11,14 @@ interface DestinationData {
   slug: string
   description: string | null
   icon: string | null
+  audio: string | null
 }
 
 export default function Destination() {
   const { slug } = useParams()
   const [destination, setDestination] = useState<DestinationData | null>(null)
   const [loading, setLoading] = useState(true)
+  const { setTrack } = useAudio()
 
   const isHearth = slug === 'the-hearth'
 
@@ -33,6 +36,13 @@ export default function Destination() {
       .catch(() => {})
       .finally(() => setLoading(false))
   }, [slug, isHearth])
+
+  // Set destination audio track on mount, return to map audio on unmount
+  useEffect(() => {
+    if (isHearth || !destination?.audio) return
+    setTrack(destination.audio)
+    return () => setTrack(null)
+  }, [destination, isHearth, setTrack])
 
   if (isHearth) {
     return <TheHearth />
