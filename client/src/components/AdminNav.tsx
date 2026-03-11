@@ -5,6 +5,7 @@ const NAV_ITEMS = [
   { path: '/admin/characters', label: 'Characters' },
   { path: '/admin/messages', label: 'Messages' },
   { path: '/admin/auto-messages', label: 'Auto Messages' },
+  { path: '/admin/menu-items', label: 'Menu Items' },
   { path: '/admin/waypoints', label: 'Waypoints' },
 ]
 

@@ -11,6 +11,7 @@ import characterRoutes from './routes/characters.js';
 import uploadRoutes from './routes/upload.js';
 import messageRoutes from './routes/messages.js';
 import autoMessageRoutes from './routes/auto-messages.js';
+import menuItemRoutes from './routes/menuItems.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const isProduction = process.env.NODE_ENV === 'production';
@@ -41,6 +42,7 @@ app.use('/api/characters', characterRoutes);
 app.use('/api/upload', uploadRoutes);
 app.use('/api/messages', messageRoutes);
 app.use('/api/auto-messages', autoMessageRoutes);
+app.use('/api/menu-items', menuItemRoutes);
 app.use('/api', migrateRoutes);
 
 // In production, serve the built React app

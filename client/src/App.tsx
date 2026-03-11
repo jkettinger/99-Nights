@@ -6,6 +6,7 @@ import AdminWaypoints from './pages/AdminWaypoints'
 import AdminCharacters from './pages/AdminCharacters'
 import AdminMessages from './pages/AdminMessages'
 import AdminAutoMessages from './pages/AdminAutoMessages'
+import AdminMenuItems from './pages/AdminMenuItems'
 import Destination from './pages/Destination'
 import ProtectedRoute from './components/ProtectedRoute'
 import FogOverlay from './components/FogOverlay'
@@ -60,6 +61,14 @@ function AppRoutes() {
           element={
             <ProtectedRoute>
               <AdminAutoMessages />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/menu-items"
+          element={
+            <ProtectedRoute>
+              <AdminMenuItems />
             </ProtectedRoute>
           }
         />

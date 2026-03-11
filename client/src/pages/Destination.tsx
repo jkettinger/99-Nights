@@ -3,6 +3,7 @@ import { useParams, Link } from 'react-router-dom'
 import { ICON_MAP } from '../components/iconMap'
 import { useAudio } from '../contexts/AudioContext'
 import TheHearth from './TheHearth'
+import TavernMenu from '../components/TavernMenu'
 import './pages.css'
 
 interface DestinationData {
@@ -69,6 +70,7 @@ export default function Destination() {
         <p className="destination-card__wip">This region is being charted...</p>
         <Link to="/" className="destination-card__back">Return to Map</Link>
       </div>
+      {isTavern && <TavernMenu />}
     </div>
   )
 }
