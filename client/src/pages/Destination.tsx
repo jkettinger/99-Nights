@@ -67,7 +67,7 @@ export default function Destination() {
         {destination?.description && (
           <p className="destination-card__desc">{destination.description}</p>
         )}
-        <p className="destination-card__wip">This region is being charted...</p>
+        {!isTavern && <p className="destination-card__wip">This region is being charted...</p>}
         <Link to="/" className="destination-card__back">Return to Map</Link>
       </div>
       {isTavern && <TavernMenu />}
